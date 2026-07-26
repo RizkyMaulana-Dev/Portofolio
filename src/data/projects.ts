@@ -10,19 +10,19 @@ export interface CaseStudy {
     liveUrl?: string;
     githubUrl?: string;
 }
-
+const base = import.meta.env.BASE_URL;
 export const Projects: CaseStudy[] = [
     {
         title: "Platform Pre-Order & Sistem Manajemen Pesanan Kuliner (Team Project)",
         problem: "Usaha kuliner kelas membutuhkan sistem terpusat untuk menampilkan katalog produk yang siap beli (ready) dan sistem pre-order tanpa terjadi kesalahan pencatatan pesanan manual.",
         solution: "Membuat platform web full-stack dengan katalog produk interaktif untuk pembeli dan Admin Panel khusus bagi pengelola untuk memantau pesanan masuk serta memperbarui status pengiriman secara real-time.",
-        techStack: ["Laravel", "PHP", "MySQL", "JavaScript", "Bootstrap / Tailwind"],
+        techStack: ["Laravel", "Filament", "PHP", "MySQL", "JavaScript", "Bootstrap / Tailwind"],
         category: "FULL-STACK WEB",
         role: "Full-Stack Dev",
         year: "2025",
-        image: "/images/projects/food-preorder.png",
+        image: `${base}images/projects/Main-Page-Web-Pemesanan.svg`,
         liveUrl: "",
-        githubUrl: "https://github.com/yourusername/food-preorder-app"
+        githubUrl: "https://github.com/RizkyMaulana-Dev/website-pemesanan"
     },
     {
         title: "Arsitektur Offline-First & Sinkronisasi State Aplikasi Absensi Mobile",

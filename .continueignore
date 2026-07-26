@@ -1,0 +1,21 @@
+# Folder dependency & build (WAJIB di-ignore)
+node_modules/
+vendor/
+.git/
+dist/
+build/
+public/storage/
+
+# File log, cache, & database lokal
+*.log
+*.sqlite
+.env
+*.lock
+package-lock.json
+composer.lock
+
+# Asset media besar
+*.png
+*.jpg
+*.mp4
+*.pdf

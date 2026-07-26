@@ -56,7 +56,7 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
         {
           Projects.map((project, index) => {
             const isEven = index % 2 === 0;
-            
+            const isLiveDisabled = !project.liveUrl || project.liveUrl === '#';
             return (
               // Menambahkan Data Attributes untuk Filter (data-category & data-role)
               <div 
@@ -111,16 +111,35 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
                     </div>
                   </div>
 
-                  <div class="flex gap-4">
-                    <Button href={project.liveUrl || "#"} class="rounded-full px-6 py-2">
-                      Visit Site ↗
-                    </Button>
-                    {project.githubUrl && (
-                      <Button href={project.githubUrl} variant="secondary" class="rounded-full px-6 py-2">
-                        Source Code
-                      </Button>
+                    <div class="flex gap-4">
+                    <!-- TOMBOL VISIT SITE -->
+                    {isLiveDisabled ? (
+                        <button 
+                        type="button" 
+                        class="rounded-full px-6 py-2 bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 opacity-50 cursor-not-allowed font-medium"
+                        >
+                        Visit Site ↗
+                        </button>
+                    ) : (
+                        <Button 
+                        href={project.liveUrl} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rounded-full px-6 py-2"
+                        >
+                        Visit Site ↗
+                        </Button>
                     )}
-                  </div>
+                    
+                    <!-- TOMBOL SOURCE CODE -->
+                    {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                        <Button variant="secondary" class="rounded-full px-6 py-2">
+                            Source Code
+                        </Button>
+                        </a>
+                    )}
+                    </div>
                 </div>
 
               </div>
