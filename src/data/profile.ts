@@ -4,7 +4,7 @@ export const profile = {
   email: "maulana.rizky.connect@gmail.com",
   location: "Indonesia",
 
-  bio: "Full stack web developer with a background in game development. I've built full game production cycles across multiple engines during my internship at Gamelab.ID, and now focus on crafting fast, scalable web applications with clean architecture. I enjoy bridging interactive, game-like experiences with practical, real-world products.",
+  bio: "Hello, my name is Rizky Maulana, commonly known as Rizky. I am a recent graduate of the Software Engineering program from SMKN 4 Padalarang. During my time at school, I have been actively working as a freelancer for about one year, during which I successfully developed several applications — one of which is an Attendance App for students — that received positive responses from clients due to its features aligning with their needs.",
 
   availability: "Open to Work",
 
@@ -13,15 +13,12 @@ export const profile = {
   projectsCount: 10,
 
   stack: [
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Astro",
-    "Tailwind CSS",
-    "Phaser.js",
-    "Three.js",
-    "Unity",
-    "Godot",
-    "Python",
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Laravel",
+  "Tailwind CSS",
+  "PostgreSQL",
+  "MySQL"
   ],
 };
