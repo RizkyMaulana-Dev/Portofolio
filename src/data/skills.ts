@@ -12,9 +12,6 @@ export const techCategories = [
     items: [
       "Server Deployment",
       "Linux / VPS Management",
-      "Production Troubleshooting",
-      "Route & URL Configuration",
-      "Environment Setup",
     ],
   },
   {

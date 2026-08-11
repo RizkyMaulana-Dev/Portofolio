@@ -23,42 +23,4 @@ export const Experiences: Experience[] = [
         ],
         techStack: ["Laravel", "PHP", "RESTful API", "MySQL/SQLite", "Git", "Postman"]
     },
-    {
-        role: "Full-Stack Web Developer",
-        company: "Team Project (Food Business Simulation)",
-        location: "On-site / Remote",
-        period: "2025",
-        description: "Berkolaborasi dalam tim pengembang beranggotakan 3 orang untuk membangun platform e-commerce dan manajemen pesanan end-to-end untuk bisnis kuliner.",
-        achievements: [
-            "Mengembangkan katalog produk interaktif yang memfasilitasi pengguna untuk melihat ketersediaan stok (*ready*) dan melakukan pemesanan sistem *pre-order*.",
-            "Membangun *Admin Panel* khusus untuk mengelola operasional bisnis, memungkinkan pelacakan pesanan masuk dan pembaruan status pengiriman secara *real-time* (dari proses hingga selesai).",
-            "Bertanggung jawab penuh atas siklus *full-stack* bersama satu rekan *developer*, mulai dari perancangan antarmuka, pembuatan logika backend, hingga integrasi database."
-        ],
-        techStack: ["PHP", "Laravel", "HTML/CSS", "JavaScript", "MySQL", "Git"]
-    },
-    {
-        role: "Game Logic Programmer",
-        company: "Educational / Independent Project",
-        location: "Remote",
-        period: "2024 - 2025",
-        description: "Mempelajari dan menerapkan logika inti permainan (gameplay programming) untuk pengembangan sistem dan mekanika beberapa proyek game sederhana.",
-        achievements: [
-            "Merancang dan mengimplementasikan algoritma untuk sistem penyimpanan data pemain (*save score*) secara persisten.",
-            "Membangun logika kalkulasi matematis internal game, termasuk sistem pengurangan nilai dan manajemen *Health Points* (darah/HP) karakter.",
-            "Fokus pada efisiensi struktur kode *backend* game untuk memastikan mekanika permainan berjalan lancar dan responsif."
-        ],
-        techStack: ["Game Logic", "Data Structures", "Algorithms", "Object-Oriented Programming"]
-    },
-    {
-        role: "Automation & Tools Developer",
-        company: "Independent Projects",
-        location: "Remote",
-        period: "2024 - 2025",
-        description: "Fokus pada pengembangan utilitas automasi berbasis kecerdasan buatan lokal (Local AI) dan skrip pengolahan data berskala besar.",
-        achievements: [
-            "Mengintegrasikan Vision-Language Model (VLM) via LM Studio dengan skrip Python untuk menciptakan sistem otomasi layar yang adaptif terhadap perubahan resolusi UI.",
-            "Mengembangkan data pipeline dan scraping otomatis memory-safe dengan fitur rotasi proxy guna mencegah IP ban dan kebocoran memori RAM."
-        ],
-        techStack: ["Python", "Gemma AI", "PyAutoGUI", "Scrapy", "Linux Server"]
-    }
 ];
