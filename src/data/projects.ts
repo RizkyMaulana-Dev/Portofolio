@@ -13,18 +13,6 @@ export interface CaseStudy {
 const base = import.meta.env.BASE_URL;
 export const Projects: CaseStudy[] = [
     {
-        title: "Platform Pre-Order & Sistem Manajemen Pesanan Kuliner (Team Project)",
-        problem: "Usaha kuliner kelas membutuhkan sistem terpusat untuk menampilkan katalog produk yang siap beli (ready) dan sistem pre-order tanpa terjadi kesalahan pencatatan pesanan manual.",
-        solution: "Membuat platform web full-stack dengan katalog produk interaktif untuk pembeli dan Admin Panel khusus bagi pengelola untuk memantau pesanan masuk serta memperbarui status pengiriman secara real-time.",
-        techStack: ["Laravel", "Filament", "PHP", "MySQL", "JavaScript", "Tailwind"],
-        category: "FULL-STACK WEB",
-        role: "Full-Stack Dev",
-        year: "2025",
-        image: `${base}/images/projects/Main-Page-Web-Pemesanan.svg`,
-        liveUrl: "",
-        githubUrl: "https://github.com/RizkyMaulana-Dev/website-pemesanan"
-    },
-    {
         title: "School Management System API",
         problem: "Pengelolaan administrasi sekolah yang mencakup data akademik, presensi, perpustakaan, dan inventaris seringkali tidak terpusat, rentan terhadap inkonsistensi data, serta memiliki sistem manajemen hak akses (otorisasi) yang tidak terstruktur untuk berbagai entitas pengguna (Siswa, Guru, Admin).",
         solution: "Membangun layanan Backend REST API yang terpusat dan modular dengan menerapkan Role-Based Access Control (RBAC) yang granular. Sistem ini dilengkapi validasi data yang ketat (Zod), keamanan token (JWT), serta otomatisasi relasional seperti pembaruan stok inventaris dan perhitungan denda perpustakaan secara realtime.",
@@ -35,6 +23,18 @@ export const Projects: CaseStudy[] = [
         image: `${base}/images/projects/School-Management.svg`,
         liveUrl: "", 
         githubUrl: "https://github.com/RizkyMaulana-Dev/school-dashboard-starter"
+    },
+    {
+        title: "Platform Pre-Order & Sistem Manajemen Pesanan Kuliner (Team Project)",
+        problem: "Usaha kuliner kelas membutuhkan sistem terpusat untuk menampilkan katalog produk yang siap beli (ready) dan sistem pre-order tanpa terjadi kesalahan pencatatan pesanan manual.",
+        solution: "Membuat platform web full-stack dengan katalog produk interaktif untuk pembeli dan Admin Panel khusus bagi pengelola untuk memantau pesanan masuk serta memperbarui status pengiriman secara real-time.",
+        techStack: ["Laravel", "Filament", "PHP", "MySQL", "JavaScript", "Tailwind"],
+        category: "FULL-STACK WEB",
+        role: "Full-Stack Dev",
+        year: "2025",
+        image: `${base}/images/projects/Main-Page-Web-Pemesanan.svg`,
+        liveUrl: "",
+        githubUrl: "https://github.com/RizkyMaulana-Dev/website-pemesanan"
     },
     {
         title: "Equipment Rental & Inventory Management System",

@@ -1,87 +1,171 @@
 ---
+import MainLayout from "@/layouts/MainLayout.astro";
 import Container from "../ui/Container.astro";
 import Section from "../ui/Section.astro";
-import Badge from "../ui/Badge.astro";
 import Button from "../ui/Button.astro";
 import { Projects } from "@/data/projects";
+
+const uniqueCategories = ["ALL", ...new Set(Projects.map(p => p.category))];
+const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
+
+// Ambil hanya project pertama
+const firstProject = Projects[0];
 ---
+  <Section class="bg-white transition-colors duration-300 dark:bg-neutral-950 py-20 sm:py-32">
+    <Container>
+      
+      <!-- Header Halaman & Filter UI -->
+      <div class="max-w-4xl mb-20">
+        <span class="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 block mb-3">
+          ARCHIVE / WORK SPECIFICATIONS
+        </span>
+        <h1 class="text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl md:text-6xl dark:text-white">
+          Favourite Project
+        </h1>
+      </div>
 
-<Section class="bg-neutral-50 transition-colors duration-300 dark:bg-neutral-900 py-20 sm:py-28 border-t border-neutral-100 dark:border-neutral-800/50">
-  <Container id="projects">
-    
-    <!-- Section Header -->
-    <div class="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-      <Badge class="mb-4 sm:mb-5">
-        ⚡ Problem Solving Case Studies
-      </Badge>
-      <h2 class="text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-white">
-        Behind the Code: <span class="text-blue-600 dark:text-blue-400">Featured Projects</span>
-      </h2>
-      <p class="mt-4 text-base leading-relaxed text-neutral-600 sm:text-lg dark:text-neutral-400">
-        Bukan sekadar memajang antarmuka. Ini adalah bagaimana saya menganalisis tantangan teknis, mengoptimalkan arsitektur, dan merumuskan solusi efisien.
-      </p>
-    </div>
-
-    <!-- Grid Layout (Dibatasi hanya 3 data teratas) -->
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      {
-        Projects.slice(0, 3).map((project) => (
-          <div class="flex flex-col justify-between bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800/60 rounded-2xl p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700">
-            
-            <div>
-              <!-- Project Title -->
-              <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white mb-5 line-clamp-2 min-h-[3.5rem]">
-                {project.title}
-              </h3>
+      <!-- List Baris Proyek Premium - Hanya Project Pertama -->
+      <div id="projects-container" class="flex flex-col gap-24 sm:gap-32">
+        {
+          firstProject ? (
+            <div 
+              class="project-row grid grid-cols-1 lg:grid-cols-12 gap-12 items-center transition-opacity duration-500"
+              data-category={firstProject.category}
+              data-role={firstProject.role}
+            >
               
-              <!-- Problem Box -->
-              <div class="mb-5 bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-xl p-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block mb-1">
-                  🔴 The Challenge
-                </span>
-                <p class="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                  {project.problem}
-                </p>
+              <!-- Kolom Mockup Gambar -->
+              <div class="image-col lg:col-span-7 w-full lg:order-first">
+                <div class="relative bg-neutral-900 dark:bg-neutral-950 rounded-2xl p-4 sm:p-6 shadow-xl border border-neutral-200/60 dark:border-neutral-800 group overflow-hidden">
+                  <div class="aspect-video w-full rounded-lg overflow-hidden bg-neutral-800 flex items-center justify-center">
+                    {firstProject.image ? (
+                      <img 
+                        src={firstProject.image} 
+                        alt={firstProject.title} 
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span class="text-neutral-500 text-sm font-mono">💻 Mockup_{firstProject.title.replace(/\s+/g, '_')}.png</span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <!-- Solution Box -->
-              <div class="mb-6 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl p-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block mb-1">
-                  🟢 The Solution
+              <!-- Kolom Informasi Detail -->
+              <div class="lg:col-span-5 flex flex-col justify-center">
+                <span class="text-xs font-mono tracking-wider text-neutral-400 dark:text-neutral-500 block mb-2">
+                  {firstProject.category || "BACKEND / FULL-STACK"}
                 </span>
-                <p class="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                  {project.solution}
+                
+                <h2 class="text-3xl font-black tracking-tight text-neutral-900 dark:text-white mb-4 capitalize">
+                  {firstProject.title.toLowerCase()}
+                </h2>
+                
+                <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">
+                  {firstProject.solution}
                 </p>
+
+                <div class="grid grid-cols-3 gap-4 py-5 border-t border-b border-neutral-200 dark:border-neutral-800 mb-8 text-sm">
+                  <div>
+                    <span class="text-xs font-bold text-neutral-400 dark:text-neutral-500 block uppercase mb-1">Role</span>
+                    <span class="font-medium text-neutral-800 dark:text-neutral-200">{firstProject.role || "Full-stack"}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-neutral-400 dark:text-neutral-500 block uppercase mb-1">Toolkit</span>
+                    <span class="font-medium text-neutral-800 dark:text-neutral-200 block truncate">{firstProject.techStack.slice(0, 2).join(" · ")}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-neutral-400 dark:text-neutral-500 block uppercase mb-1">Year</span>
+                    <span class="font-medium text-neutral-800 dark:text-neutral-200">{firstProject.year || "2026"}</span>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <!-- TOMBOL VISIT SITE -->
+                  {!firstProject.liveUrl || firstProject.liveUrl === '#' ? (
+                    <button 
+                      type="button" 
+                      class="rounded-full px-6 py-2 bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 opacity-50 cursor-not-allowed font-medium"
+                    >
+                      Visit Site ↗
+                    </button>
+                  ) : (
+                    <Button 
+                      href={firstProject.liveUrl} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="rounded-full px-6 py-2"
+                    >
+                      Visit Site ↗
+                    </Button>
+                  )}
+                  
+                  <!-- TOMBOL SOURCE CODE -->
+                  {firstProject.githubUrl && (
+                    <a href={firstProject.githubUrl} target="_blank" rel="noopener noreferrer">
+                      <Button variant="secondary" class="rounded-full px-6 py-2">
+                        Source Code
+                      </Button>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-
-            <!-- Tech Stack Footer -->
-            <div class="pt-5 border-t border-neutral-100 dark:border-neutral-900">
-              <div class="flex flex-wrap gap-1.5">
-                {
-                  project.techStack.map((tech) => (
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 transition-colors">
-                      {tech}
-                    </span>
-                  ))
-                }
-              </div>
+          ) : (
+            <div class="text-center py-20">
+              <p class="text-neutral-500 dark:text-neutral-400 text-lg">Belum ada proyek yang ditambahkan.</p>
             </div>
+          )
+        }
+        
+        <!-- Pesan Kosong Jika Filter Tidak Cocok -->
+        <div id="no-results-msg" class="hidden text-center py-20">
+          <p class="text-neutral-500 dark:text-neutral-400 text-lg">Tidak ada proyek yang sesuai dengan kriteria filter Anda.</p>
+        </div>
+      </div>
 
-          </div>
-        ))
+    <Container class="flex items-center justify-center mt-12">
+        <Button
+            href={`${import.meta.env.BASE_URL}/projects`}
+            class="hover"
+        >
+            View All Projects
+        </Button>
+    </Container>
+      
+    </Container>
+  </Section>
+
+<!-- SCRIPT LOGIKA FILTER -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const categorySelect = document.getElementById("filter-category") as HTMLSelectElement;
+    const roleSelect = document.getElementById("filter-role") as HTMLSelectElement;
+    const projectRow = document.querySelector(".project-row") as HTMLElement;
+    const noResultsMsg = document.getElementById("no-results-msg");
+
+    function applyFilters() {
+      if (!projectRow) return;
+
+      const selectedCategory = categorySelect.value;
+      const selectedRole = roleSelect.value;
+
+      const rowCategory = projectRow.getAttribute("data-category");
+      const rowRole = projectRow.getAttribute("data-role");
+
+      const matchCategory = selectedCategory === "ALL" || rowCategory === selectedCategory;
+      const matchRole = selectedRole === "ALL" || rowRole === selectedRole;
+
+      if (matchCategory && matchRole) {
+        projectRow.style.display = "grid";
+        if (noResultsMsg) noResultsMsg.classList.add("hidden");
+      } else {
+        projectRow.style.display = "none";
+        if (noResultsMsg) noResultsMsg.classList.remove("hidden");
       }
-    </div>
+    }
 
-    <!-- Call to action mengarah ke halaman internal baru -->
-    <div class="mt-16 text-center">
-      <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-        Ingin melihat detail arsitektur dan daftar proyek saya selengkapnya?
-      </p>
-      <Button href={`${import.meta.env.BASE_URL}/projects`} class="inline-flex items-center gap-2">
-        Lihat Semua Project →
-      </Button>
-    </div>
-
-  </Container>
-</Section>
+    categorySelect.addEventListener("change", applyFilters);
+    roleSelect.addEventListener("change", applyFilters);
+  });
+</script>
