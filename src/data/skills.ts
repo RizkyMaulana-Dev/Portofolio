@@ -1,43 +1,34 @@
 export const techCategories = [
   {
     label: "Frontend",
-    items: ["JavaScript", "TypeScript", "React", "Astro", "Tailwind CSS"],
+    items: ["JavaScript", "TypeScript", "React", "Tailwind CSS"],
   },
   {
     label: "Backend",
-    items: ["Node.js", "TypeScript", "REST API", "PHP", "Laravel"],
+    items: ["Node.js", "REST API", "PHP", "Laravel"],
   },
   {
-    label: "DevOps & Server",
-    items: [
-      "Server Deployment",
-      "Linux / VPS Management",
-    ],
+    label: "Mobile Development",
+    items: ["Mobile App Development", "Cross-Platform Layouting"],
   },
   {
-    label: "Tools & Platform",
-    items: ["Git", "GitHub", "Figma", "VS Code"],
+    label: "DevOps, Server & Security",
+    items: ["Server Deployment", "Linux / VPS", "Cybersecurity Awareness"],
+  },
+  {
+    label: "Tools & Design Platform",
+    items: ["Git", "GitHub", "Figma", "Canva", "VS Code", "Linux"],
   },
   {
     label: "AI & Automation",
-    items: [
-      "Prompt Engineering",
-      "ChatGPT / Claude / Gemini",
-      "GitHub Copilot",
-      "LM Studio API",
-    ],
+    items: ["Prompt Engineering", "ChatGPT / Claude / Gemini", "GitHub Copilot", "LM Studio API"],
   },
   {
     label: "Game Dev & 3D",
-    items: ["Phaser.js", "Unity", "Three.js", "Godot", "GDScript"],
+    items: ["Phaser.js", "Three.js", "Godot", "GDScript", "Educational Game Modules"],
   },
   {
-    label: "Methodology & Problem Solving",
-    items: [
-      "Debugging & Troubleshooting",
-      "Root Cause Analysis",
-      "Code Optimization",
-      "Algorithmic Thinking",
-    ],
+    label: "Soft Skills",
+    items: ["Debugging & Troubleshooting", "Root Cause Analysis", "Algorithmic Thinking", "Deep Thinking"],
   },
 ];
