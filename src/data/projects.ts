@@ -16,12 +16,12 @@ export const Projects: CaseStudy[] = [
         title: "School Management System API",
         problem: "Pengelolaan administrasi sekolah yang mencakup data akademik, presensi, perpustakaan, dan inventaris seringkali tidak terpusat, rentan terhadap inkonsistensi data, serta memiliki sistem manajemen hak akses (otorisasi) yang tidak terstruktur untuk berbagai entitas pengguna (Siswa, Guru, Admin).",
         solution: "Membangun layanan Backend REST API yang terpusat dan modular dengan menerapkan Role-Based Access Control (RBAC) yang granular. Sistem ini dilengkapi validasi data yang ketat (Zod), keamanan token (JWT), serta otomatisasi relasional seperti pembaruan stok inventaris dan perhitungan denda perpustakaan secara realtime.",
-        techStack: ["Node.js",  "Express.js",  "TypeScript",  "Prisma ORM",  "PostgreSQL",  "JWT",  "Zod"],
+        techStack: ["Node.js", "Express.js", "TypeScript", "Prisma ORM", "PostgreSQL", "JWT", "Zod"],
         category: "Web",
         role: "Fullstack Developer",
         year: "2026",
         image: `${base}/images/projects/School-Management.svg`,
-        liveUrl: "", 
+        liveUrl: "https://rizkymaulana-dev.github.io/school-dashboard-starter/",
         githubUrl: "https://github.com/RizkyMaulana-Dev/school-dashboard-starter"
     },
     {
@@ -40,7 +40,7 @@ export const Projects: CaseStudy[] = [
         title: "Equipment Rental & Inventory Management System",
         problem: "Pencatatan inventaris dan transaksi peminjaman barang yang manual seringkali memicu kehilangan data, sulitnya melacak status barang (dipinjam/dikembalikan), serta proses pembuatan laporan yang tidak efisien.",
         solution: "Membangun aplikasi web full-stack terintegrasi dengan pemisahan akses untuk Admin dan User. Sistem ini mengotomatisasi alur pengajuan peminjaman, persetujuan (approval) transaksi, pelacakan riwayat secara real-time, dan fitur ekspor data transaksi ke format Excel untuk kebutuhan pelaporan.",
-        techStack: ["Laravel 12",  "PHP",  "JavaScript",  "MySQL"],
+        techStack: ["Laravel 12", "PHP", "JavaScript", "MySQL"],
         category: "Web",
         role: "Fullstack Developer",
         year: "2025",
@@ -53,9 +53,9 @@ export const Projects: CaseStudy[] = [
         problem: "Diperlukannya sebuah platform digital yang ringan dan responsif untuk menyimpan dan mengelola catatan harian secara terstruktur, guna menggantikan pencatatan manual yang datanya rentan hilang atau sulit dicari.",
         solution: "Merancang alur sistem (flowchart) dan membangun arsitektur Backend menggunakan PHP Native dan database MySQL untuk persistensi data catatan. Aplikasi ini juga diintegrasikan dengan antarmuka responsif berbasis Tailwind CSS agar dapat diakses dengan baik di berbagai perangkat.",
         techStack: [
-            "PHP", 
-            "MySQL", 
-            "Tailwind CSS", 
+            "PHP",
+            "MySQL",
+            "Tailwind CSS",
             "Node.js (npm)"
         ],
         category: "Web",
@@ -70,16 +70,16 @@ export const Projects: CaseStudy[] = [
         problem: "Kebutuhan akan platform pemesanan makanan online yang tidak hanya fungsional, tetapi juga mampu menyajikan visual produk yang menarik (appetizing) dengan pengalaman pengelolaan keranjang belanja yang interaktif dan mudah digunakan oleh pelanggan.",
         solution: "Membangun aplikasi web e-commerce full-stack dengan antarmuka UI/UX yang bersih dan responsif menggunakan Tailwind CSS. Sistem ini dilengkapi autentikasi pengguna, manajemen menu interaktif (rating, stok, counter pesanan), serta keranjang belanja dinamis dengan fitur selective checkout yang diintegrasikan menggunakan backend PHP Native dan MySQL.",
         techStack: [
-            "PHP", 
-            "MySQL", 
-            "Tailwind CSS", 
+            "PHP",
+            "MySQL",
+            "Tailwind CSS",
             "JavaScript"
         ],
         category: "Web",
         role: "Fullstack Developer",
         year: "2025",
         image: `${base}/images/projects/Landing-Page-Dimsum.svg`,
-        liveUrl: "", 
+        liveUrl: "",
         githubUrl: "https://github.com/RizkyMaulana-Dev/CodeX_Bites"
     }
 ];

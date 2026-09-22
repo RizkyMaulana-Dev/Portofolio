@@ -5,15 +5,11 @@ export const techCategories = [
   },
   {
     label: "Backend",
-    items: ["Node.js", "REST API", "PHP", "Laravel"],
+    items: ["Node.js", "PHP", "Laravel"],
   },
-//   {
-//     label: "Mobile Development",
-//     items: ["Mobile App Development", "Cross-Platform Layouting"],
-//   },
   {
     label: "DevOps, Server & Security",
-    items: ["Server Deployment", "Linux / VPS", "Cybersecurity Awareness"],
+    items: ["Server Deployment", "Linux / VPS", "CI/CD Automation"],
   },
   {
     label: "Tools & Design Platform",
@@ -21,14 +17,10 @@ export const techCategories = [
   },
   {
     label: "AI & Automation",
-    items: ["Prompt Engineering", "ChatGPT / Claude / Gemini", "GitHub Copilot", "LM Studio API"],
+    items: ["Prompt Engineering", "ChatGPT / Claude / Gemini", "Antigravity / Cline"],
   },
-//   {
-//     label: "Game Dev & 3D",
-//     items: ["Phaser.js", "Three.js", "Godot", "GDScript", "Educational Game Modules"],
-//   },
   {
     label: "Soft Skills",
-    items: ["Debugging & Troubleshooting", "Root Cause Analysis", "Algorithmic Thinking", "Deep Thinking"],
+    items: ["Debugging & Troubleshooting", "Deep Thinking"],
   },
 ];

@@ -13,12 +13,10 @@ export const profile = {
   projectsCount: 10,
 
   stack: [
-  "JavaScript",
   "TypeScript",
   "React",
   "Laravel",
   "Tailwind CSS",
-  "PostgreSQL",
   "MySQL"
   ],
 };

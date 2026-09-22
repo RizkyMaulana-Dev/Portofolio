@@ -12,7 +12,7 @@ export const Experiences: Experience[] = [
     {
         role: "Game Developer",
         company: "Gamelab.ID / Educa Studio",
-        location: "Remote",
+        location: "Remote / 6 Month",
         period: "Agustus 2025 - Januari 2026",
         description: "Merancang dan mengembangkan game edukasi interaktif berbasis Phaser.js dengan penanganan logika permainan yang kompleks.",
         achievements: [
@@ -25,7 +25,7 @@ export const Experiences: Experience[] = [
     {
         role: "Fullstack Web dan Mobile Developer",
         company: "Freelance",
-        location: "Remote/Onsite",
+        location: "Remote / 6 Month",
         period: "Agustus 2024 - Januari 2025",
         description: "Merancang dan mengembangkan berbagai aplikasi web dan mobile dengan fokus utama pada arsitektur backend, pembuatan API, dan penanganan logika bisnis yang kompleks.",
         achievements: [
