@@ -10,8 +10,8 @@ interface Props {
 }
 
 const {
-  title = "Portfolio",
-  description = "Portfolio Website",
+  title = "Rizky Maulana - Fullstack Developer | Indonesia",
+  description = "Rizky Maulana is a Full Stack Developer from Indonesia specializing in React, TypeScript, Laravel, Node.js, REST APIs, and modern web applications.",
 } = Astro.props;
 ---
 
@@ -25,7 +25,7 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href={Astro.url.href} />
+    <link rel="canonical" href="https://rizkymaulana-dev.github.io/Portofolio/"/>    
 
     <!-- Favicon & Icons (Taruh file-file ini di folder public/) -->
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/Logo.svg`} />
@@ -49,6 +49,26 @@ const {
 
     <meta name="color-scheme" content="light dark" />
 
+    
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "mainEntity": {
+            "@type": "Person",
+            "@id": "https://rizkymaulana-dev.github.io/Portofolio/#person",
+            "name": "Rizky Maulana",
+            "jobTitle": "Full Stack Developer",
+            "url": "https://rizkymaulana-dev.github.io/Portofolio/",
+            "image": "https://rizkymaulana-dev.github.io/Portofolio/images/profile.webp",
+            "description": "Full Stack Developer from Indonesia specializing in React, TypeScript, Laravel, Node.js, and REST API development.",
+            "sameAs": [
+            "https://github.com/RizkyMaulana310807",
+            "https://www.linkedin.com/in/rzkymaulana"
+            ]
+        }
+        }
+        </script>
     
     <!-- Cegah flash tema salah saat halaman load -->
     <script is:inline>

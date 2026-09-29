@@ -6,6 +6,7 @@ import Image from "astro/components/Image.astro";
 import profileImage from '../../assets/images/profile.webp';
 import { profile } from "@/data/profile";
 // Fallback aman kalau field belum ada di data/profile.ts
+const name = profile.name
 const bio =
   profile.bio ??
   "I'm a developer who enjoys turning ideas into fast, reliable products — from interactive games to full-stack web applications. I care about clean code, thoughtful UX, and shipping things that actually work.";
@@ -87,6 +88,11 @@ const quickFacts = [
 
       <!-- Right: bio + stats + stack -->
       <div>
+        <p
+          class="text-lg leading-8 text-neutral-600 dark:text-neutral-400"
+        >
+          {name}
+        </p>
         <p
           class="text-lg leading-8 text-neutral-600 dark:text-neutral-400"
         >
