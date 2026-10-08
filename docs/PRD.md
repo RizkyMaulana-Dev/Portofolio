@@ -4,155 +4,301 @@
 | :--- | :--- |
 | **Nama Proyek** | Personal Engineering Showcase & Portfolio Website |
 | **Pemilik Proyek** | Rizky Maulana (Full Stack Developer) |
-| **Versi Dokumen** | v1.0.0 |
-| **Status Dokumen** | Active / Baseline |
+| **Versi Dokumen** | v2.0.0 |
+| **Status Dokumen** | As-Built Baseline + Gap Analysis |
 | **Tanggal Pembuatan** | Oktober 2026 |
+| **Supersedes** | v1.0.0 |
 | **Target Deployment** | GitHub Pages (`https://rizkymaulana-dev.github.io/Portofolio/`) |
+| **Dokumen Terkait** | [DESIGN.md](DESIGN.md) · [REMEDIATION.md](REMEDIATION.md) |
+
+> **Dokumen ini adalah snapshot dari kode yang benar-benar ada.** Semua klaim di bawah telah diverifikasi terhadap hasil `npm run build` dan `dist/`, bukan terhadap niat. Daftar temuan, bug, dan perubahan desain ada di **[REMEDIATION.md](REMEDIATION.md)** — baca dokumen itu sebelum mengerjakan apa pun.
 
 ---
 
-## 1. Executive Summary & Visi Produk
+## 1. Executive Summary
 
-### 1.1 Latar Belakang
-Sebagian besar portofolio developer hanya menampilkan daftar tautan dan tangkapan layar tanpa memberikan konteks teknis mengenai masalah bisnis yang diselesaikan, kendala performa, maupun arsitektur solusi. Di industri rekayasa perangkat lunak modern, perekrut teknis (*tech recruiters*), *Engineering Managers*, dan calon klien membutuhkan bukti nyata kapabilitas teknis (*engineering competence*), kemampuan analitis, serta kepedulian terhadap kualitas kode dan performa.
+### 1.1 Masalah yang Diselesaikan
 
-### 1.2 Visi Produk
-Membangun platform portofolio web dan *engineering showcase* pribadi yang:
-1. **Case-Study Driven:** Menyoroti masalah (*problem*), solusi arsitektural (*solution*), serta tumpukan teknologi (*tech stack*) secara terstruktur pada setiap proyek.
-2. **Ultra-Fast & Accessible:** Menghadirkan skor *Core Web Vitals* optimal mendekati 100 melalui pendekatan *Static Site Generation* (SSG) berbasis Astro, minim *JavaScript overhead*, dan ramah pembaca layar (*accessibility-friendly*).
-3. **Interactive & Polished:** Memberikan pengalaman interaktif yang intuitif melalui penyaringan proyek *client-side*, penataan ulang tata letak otomatis (*auto-reordering*), serta dukungan tema gelap (*dark mode*) dan terang (*light mode*).
+Portofolio developer generik menampilkan tautan dan screenshot tanpa konteks teknis. Target pengguna — tech recruiter, engineering manager, dan klien freelance — membutuhkan bukti kapabilitas: masalah bisnis yang diselesaikan, keputusan arsitektur, dan kebersihan kode. Situs ini menjawabnya lewat *case-study driven* showcase yang dibangun sebagai **Static Site Generation** (Astro), dengan JavaScript seminimal mungkin.
+
+### 1.2 Realitas Implementasi Saat Ini
+
+v1.0.0 mendeskripsikan *intent*. Hasil audit kode menunjukkan beberapa klaim PRD lama **tidak terpenuhi**:
+
+| Klaim PRD v1.0.0 | Status Aktual | Bukti |
+| :--- | :--- | :--- |
+| Astro v4/v5 | ❌ **Astro 7.1.1** | `package.json` |
+| Halaman `/projects/:slug` studi kasus dinamis | ❌ **Rute mati**, menghasilkan HTML 0 byte | `src/pages/projects/[slug].astro` (9 baris) |
+| Halaman `/rahasia-admin` dengan auth | ❌ **3 file kosong**, menghasilkan HTML 0 byte | `src/pages/rahasia-admin/*.astro` |
+| `AdminLayout` dengan isolasi navigasi | ❌ **File kosong (0 byte)** | `src/layouts/AdminLayout.astro` |
+| Canonical & OG URL dinamis per rute | ❌ **Canonical di-hardcode, `og:url` salah host** | `src/layouts/MainLayout.astro:28,38` |
+| CLS 0.00 (dimensi eksplisit semua gambar) | ❌ **3 dari 4 `<img>` tanpa `width`/`height`** | `projects.astro:73`, `FeaturedProject.astro:39`, `Certificates.astro:58` |
+| Arsitektur data = SSOT tunggal | ⚠️ **SSOT ganda** — `profile.ts` dan `portofolio.ts` sama-sama export `profile` | `src/data/portofolio.ts` |
+| `og-image.png` untuk pratinjau tautan | ❌ **File tidak ada** | `public/og-image.png` |
+| Preview gambar sertifikat | ❌ **Direktori ada tapi kosong** → 6 gambar 404 | `public/images/certificates/` |
+| Tombol unduh CV di Hero | ❌ **Hanya ada di Footer dan `/links`** | `Hero.astro` |
+
+**Kesimpulan eksekutif:** situs secara visual berfungsi dan build lolos, tetapi **belum layak disebut "production-ready"** karena tiga kelas masalah: (a) empat halaman kosong ter-deploy, (b) SEOCanonical/OpenGraph salah sehingga setiap tautan yang dibagikan ke LinkedIn/WhatsApp menampilkan URL yang tidak ada, dan (c) bug CSS cascade membuat background halaman tidak mengikuti toggle tema. Detail dan urutan perbaikannya di REMEDIATION.md.
 
 ---
 
-## 2. Target Audiens & Persona Pengguna
+## 2. Arsitektur Sistem (As-Built)
 
-Platform ini dirancang khusus untuk memenuhi ekspektasi tiga persona utama:
+### 2.1 Stack Terverifikasi
 
 ```mermaid
 graph TD
-    User([Pengunjung Situs]) --> P1[Tech Recruiter / Talent Acquisition]
-    User --> P2[Engineering Manager / CTO / Lead Dev]
-    User --> P3[Klien Freelance & Kolaborator Bisnis]
+    subgraph Data["Data Layer — src/data/ (SSOT, Typings Ketat)"]
+        D1[profile.ts]
+        D2[projects.ts]
+        D3[experience.ts]
+        D4[skills.ts]
+        D5[certificates.ts]
+        D6[navigation.ts]
+        D7[socials.ts]
+        D8["portofolio.ts ⚠️ duplikat"]
+        D9["constants.ts ⚠️ kosong"]
+    end
 
-    P1 --> G1[Evaluasi Pengalaman Kerja, Download CV Cepat, Cek Ketersediaan]
-    P2 --> G2[Inspeksi Arsitektur Kode, Tech Stack, Kasus Nyata & GitHub Repo]
-    P3 --> G3[Eksplorasi Solusi Produk, Integritas Bisnis, Kontak Cepat via WA/Email]
+    subgraph UI["Presentation Layer"]
+        PRIM["UI Primitif: Button, Badge, Card, Container, Section"]
+        LAY["Layouts: MainLayout, AdminLayout ⚠️ kosong"]
+        SEC["Sections: Hero, About, TechStack, FeaturedProject, Experience, Certificates"]
+        LAYOUT["Layout: Navbar, Footer, ThemeToggle"]
+    end
+
+    subgraph Pages["src/pages/"]
+        P1[index.astro → /]
+        P2[projects.astro → /projects]
+        P3[links.astro → /links]
+        P4[404.astro]
+        P5["[slug].astro → /projects/portfolio ⚠️ 0 byte"]
+        P6["rahasia-admin/* ⚠️ 0 byte (3 halaman)"]
+    end
+
+    subgraph Host["Distribution"]
+        GH[GitHub Pages /Portofolio/]
+    end
+
+    Data --> UI --> Pages --> GH
 ```
 
-### 2.1 Persona 1: Tech Recruiter (Waktu Kunjungan: 30 - 60 Detik)
-- **Kebutuhan:** Memverifikasi kualifikasi, keahlian utama, domisili, status ketersediaan kerja (*availability*), dan mengunduh berkas Curriculum Vitae (CV) dalam format bahasa yang relevan (ID/EN).
-- **Pain Point:** Kesulitan menemukan resume yang dapat diunduh langsung, informasi kontak yang tersembunyi, atau website yang lambat dimuat.
-- **Solusi dalam Produk:** Status "Available for Work" di Hero, tombol unduh CV dwibahasa di Hero/Footer/Links, dan navigasi ringkas.
+**Komposisi output build terverifikasi:** 8 halaman HTML, ~2.187 baris TypeScript/Astro di `src/`, 1 file CSS bundle (56 KB).
 
-### 2.2 Persona 2: Engineering Manager / Technical Lead (Waktu Kunjungan: 2 - 5 Menit)
-- **Kebutuhan:** Menilai kedalaman pemahaman teknis (Backend, Database, Full-stack, Game Logic), pola arsitektur yang digunakan, dan kebersihan kode pada repositori GitHub.
-- **Pain Point:** Portofolio klise bertipe *to-do list* tanpa penjelasan arsitektural, minim *problem solving*.
-- **Solusi dalam Produk:** Struktur studi kasus *Problem-Solution*, pembagian kategori (Web, Backend, Game Dev), tautan repositori GitHub publik, serta detail pencapaian kuantitatif di linimasa karier.
+### 2.2 Catatan Konfigurasi Kritis
 
-### 2.3 Persona 3: Klien Freelance & Kolaborator (Waktu Kunjungan: 1 - 3 Menit)
-- **Kebutuhan:** Memastikan rekam jejak penyelesaian proyek sistem manajemen, e-commerce, atau game edukasi, serta akses komunikasi cepat.
-- **Pain Point:** Form kontak yang rumit, tidak ada opsi chat instan.
-- **Solusi dalam Produk:** Halaman *Hub Links* terpadu (`/links`), tombol email langsung dengan subjek terisi otomatis, dan kontak WhatsApp satu klik.
-
----
-
-## 3. Ruang Lingkup Fitur (Feature Specifications)
-
-### 3.1 Halaman Beranda (`/`)
-Halaman utama yang merangkum proposisi nilai, keahlian, dan rekam jejak profesional dalam satu alur linier yang mengalir.
-
-| Modul / Komponen | Fungsi & Kebutuhan Spesifik |
-| :--- | :--- |
-| **Navbar & Header** | <ul><li>Sticky navigation bar dengan efek *glassmorphism* (`backdrop-blur`).</li><li>Tautan navigasi halus (*smooth scroll*): `Home`, `About`, `Projects`, `Work`, `Contact`.</li><li>Pengalih tema (*Theme Toggle*) instan tanpa *flicker*.</li><li>Menu responsif hamburger untuk layar ponsel dengan animasi tinggi dinamis.</li></ul> |
-| **Hero Section** | <ul><li>Pill badge ketersediaan: `👋 Available for Work`.</li><li>Judul personalisasi dengan penekanan nama Rizky Maulana.</li><li>Deskripsi nilai profesional berfokus pada arsitektur bersih dan performa.</li><li>Aksi ganda (*Dual CTA*): *Contact Me* (menuju `/links`) dan *View Projects* (menuju `/projects`).</li><li>Foto profil teroptimasi menggunakan modul `astro:assets` format WebP.</li></ul> |
-| **About Section** | <ul><li>Ringkasan bio profesional dan filosofi kerja.</li><li>Tabel fakta cepat (*Quick Facts*): Lokasi, Tahun Pengalaman, Status Ketersediaan.</li><li>Metrik kuantitatif: `1+ Years Experience`, `10+ Projects Completed`.</li><li>Pill badge teknologi inti (*Core Stack*): React, TypeScript, Laravel, Tailwind, MySQL.</li></ul> |
-| **Tech Stack Showcase** | <ul><li>Klasifikasi kemampuan ke dalam 6 domain teknis: Frontend, Backend, DevOps & Server, Tools & Design, AI & Automation, dan Soft Skills.</li><li>Visualisasi kartu modular dengan indikator aksen biru.</li></ul> |
-| **Featured Project** | <ul><li>Menampilkan 1 proyek unggulan (*flagship*) secara eksklusif (*School Management System API*).</li><li>Format kartu detail dengan *mockup preview*, ringkasan masalah, arsitektur solusi, pembagian peran, tumpukan teknologi, tautan Demo, dan tautan Source Code.</li></ul> |
-| **Experience Timeline** | <ul><li>Linimasa vertikal interaktif yang merangkum karier di Educa Studio / Gamelab.ID dan pengalaman Freelance.</li><li>Detail pencapaian berbasis poin (*bullet achievements*) dan teknologi yang digunakan.</li><li>Dukungan logika buka/tutup (*expand/collapse*) untuk pengalaman kerja lampau.</li></ul> |
-| **Certificates Showcase** | <ul><li>Grid responsif 3 kolom menampilkan kartu sertifikat profesional dengan preview gambar dan overlay kategori.</li><li>Filter kategori berbasis *pill badge* interaktif di sisi klien (All, Internship, Backend, Web, Frontend).</li><li>Detail per kartu: nama sertifikat, penerbit, tanggal terbit, Credential ID, dan tombol *Lihat Kredensial*.</li><li>*Empty state handler* ketika kategori filter tidak memiliki item.</li></ul> |
-| **Footer & Direct CTA** | <ul><li>Kartu ajakan kolaborasi terpadu (*Call To Action*).</li><li>Dua opsi unduh CV resmi: Versi Bahasa Indonesia (ID) dan Bahasa Inggris (EN).</li><li>Baris tautan media sosial lengkap (Gmail, GitHub, LinkedIn, Instagram, TikTok, WhatsApp).</li><li>Hak cipta dinamis berbasis tahun terkini (`new Date().getFullYear()`).</li></ul> |
-
-### 3.2 Halaman Arsip Proyek (`/projects`)
-Katalog menyeluruh seluruh proyek dan studi kasus rekayasa perangkat lunak.
-
-| Fitur | Kebutuhan Fungsional |
-| :--- | :--- |
-| **Interactive Multi-Filter** | <ul><li>Dropdown filter berdasarkan **Category** (All, Web, Backend, dll.).</li><li>Dropdown filter berdasarkan **Role** (All, Fullstack Developer, Backend & System Analyst, dll.).</li><li>Eksekusi filter murni di sisi klien (*client-side*) tanpa *page reload*.</li></ul> |
-| **Auto-Reorder Layout** | <ul><li>Sistem penataan ulang otomatis tata letak selang-seling (Gambar Kiri-Teks Kanan vs Teks Kiri-Gambar Kanan).</li><li>Memastikan estetika visual tetap berirama teratur meskipun elemen tengah disembunyikan oleh filter.</li></ul> |
-| **Empty State Handler** | Menampilkan pesan umpan balik informatif (*"Tidak ada proyek yang sesuai dengan kriteria filter Anda"*) ketika kombinasi filter tidak menghasilkan item. |
-| **Action Triggers** | Tombol demo langsung dengan status nonaktif (*disabled*) yang anggun jika tautan belum tersedia, dan tombol repositori GitHub. |
-
-### 3.3 Halaman Tautan Ringkas (`/links`)
-Halaman profil terisolasi (*Bio-Link Hub*) yang optimal untuk penggunaan di bio media sosial (Instagram, TikTok, LinkedIn, GitHub).
-
-- **Header Profil:** Avatar bulat, nama lengkap, gelar profesi, dan deskripsi singkat.
-- **Tautan Prioritas:**
-  - Tautan kembali ke Website Portofolio Utama.
-  - Tombol Unduh Langsung CV Bahasa Indonesia (`.pdf`).
-  - Tombol Unduh Langsung CV Bahasa Inggris (`.pdf`).
-- **Tautan Media Sosial & Jejaring:** Kartu tautan lebar untuk LinkedIn, GitHub, WhatsApp, Instagram, TikTok, dan Email.
-- **Layout Minimalis:** Terpusat (*centered container* `max-w-md`) dan bebas distraksi.
-
-### 3.4 Halaman Error 404 Kustom (`/404.astro`)
-- Visual angka `404` yang berani (*bold display*) dengan gaya tipografi tinggi.
-- Pesan kesalahan komunikatif dan ramah pengguna dalam Bahasa Indonesia.
-- Tombol aksi pemulihan: *Kembali ke Beranda* (`/`) dan *Halaman Sebelumnya* (`history.back()`).
-- Kalkulasi tinggi viewport fleksibel (`min-h-[calc(100vh-20rem)]`) untuk menghindari patahan footer pada layar besar.
-
----
-
-## 4. Kebutuhan Non-Fungsional (Non-Functional Requirements)
-
-### 4.1 Performa & Web Vitals
-- **First Contentful Paint (FCP):** < 0.8 detik pada jaringan 4G standar.
-- **Largest Contentful Paint (LCP):** < 1.2 detik (didukung `fetchpriority="high"` dan format WebP untuk aset hero).
-- **Cumulative Layout Shift (CLS):** 0.00 (dimensi lebar dan tinggi ditetapkan eksplisit pada seluruh gambar).
-- **Interaction to Next Paint (INP):** < 50ms (eksekusi JavaScript minimal dan tanpa framework *heavy-runtime* pada rendering teks).
-
-### 4.2 Search Engine Optimization (SEO) & Metatags
-- **Semantic HTML5:** Penggunaan elemen semantik baku (`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<footer>`, `<dl>`).
-- **Meta Tags Komprehensif:** Title dinamis per halaman, meta description, canonical URL berdasar rute Astro, dan color-scheme.
-- **OpenGraph & Twitter Card:** Pratinjau tautan lengkap saat dibagikan ke platform pesan atau media sosial (LinkedIn, WhatsApp, Telegram, X).
-- **JSON-LD Structured Data:** Skema Schema.org bertipe `ProfilePage` dan `Person` dengan penandaan entitas yang valid.
-
-### 4.3 Aksesibilitas (A11y)
-- Rasio kontras teks minimal 4.5:1 terhadap latar belakang (memenuhi pedoman WCAG 2.1 Level AA) pada tema terang maupun gelap.
-- Atribut `aria-label` dan `aria-expanded` pada seluruh tombol interaktif non-teks (seperti tombol hamburger dan pengalih tema).
-- Dukungan media query `@media (prefers-reduced-motion: reduce)` untuk mematikan transisi *smooth scroll* bagi pengguna dengan sensitivitas gerak.
-
-### 4.4 Kompatibilitas Browser & Lingkungan
-- Kompatibel dengan semua browser modern (*evergreen browsers*): Chrome, Edge, Safari, Firefox.
-- Responsif penuh (*Mobile-first*) untuk resolusi layar:
-  - Mobile: 320px – 639px
-  - Tablet: 640px – 1023px
-  - Desktop: 1024px – 1440px+
-
----
-
-## 5. Arsitektur Data (Single Source of Truth)
-
-Seluruh konten data situs diisolasi dari komponen presentasi ke dalam berkas TypeScript pada direktori `src/data/`:
-
-```text
-src/data/
-├── profile.ts      # Data identitas, bio, ketersediaan, metrik pengalaman, core stack
-├── projects.ts     # Koleksi studi kasus proyek beserta problem, solution, tech stack, URL
-├── experience.ts   # Linimasa karier profesional, perusahaan, periode, dan pencapaian
-├── skills.ts       # Taksonomi keahlian teknis (Frontend, Backend, DevOps, AI, Tools)
-├── certificates.ts # Koleksi sertifikasi profesional, penerbit, credential ID, dan URL
-├── navigation.ts   # Konfigurasi menu navigasi dan routing anchor
-├── socials.ts      # Daftar tautan sosial, email bertemplate, dan ikon
-└── portofolio.ts   # Konfigurasi fallback identitas portofolio
-```
-
----
-
-## 6. Rencana Pengembangan Lanjutan (Product Roadmap)
-
-| Fase | Inisiatif | Deskripsi & Target Fitur |
+| Konfigurasi | Nilai | Risiko |
 | :--- | :--- | :--- |
-| **Fase 1 (Selesai)** | *Core Showcase & Foundation* | Rilis beranda, sistem tema, filter proyek, linimasa kerja, dan halaman `/links`. |
-| **Fase 2 (Aktif)** | *Documentation & Governance* | Pembuatan dokumen PRD, Desain Sistem, dan standardisasi alur CI/CD. |
-| **Fase 3 (Mendatang)** | *Dynamic Case Study Pages* | Implementasi rute dinamis `src/pages/projects/[slug].astro` untuk artikel bedah arsitektur mendalam dengan integrasi Markdown/MDX. |
-| **Fase 4 (Mendatang)** | *Secret Admin & Analytics* | Pengembangan antarmuka `src/pages/rahasia-admin/` untuk pemantauan analitik kunjungan, pelacakan unduhan CV, dan manajemen status ketersediaan kerja. |
-| **Fase 5 (Mendatang)** | *Interactive Demos* | Integrasi web emulator atau micro-sandbox langsung pada browser untuk game Phaser.js dan visualisasi API REST. |
+| `astro.config.mjs` `site` | `https://github.com/RizkyMaulana-Dev.github.io` | ❌ Bukan origin sebenarnya. `Astro.url` diturunkan dari sini → **`og:url` jadi `https://github.com/Portofolio/`** |
+| `astro.config.mjs` `base` | `/Portofolio` | ✅ Benar. Semua aset WAJIB lewat `import.meta.env.BASE_URL` |
+| `tailwind.config.mjs` | `darkMode: 'class'` | ⚠️ **Diabaikan Tailwind v4.** yang berlaku adalah `@custom-variant dark` di `src/styles/global.css:8` |
+| Dark mode | Class `.dark` + `localStorage.theme` + anti-FOUC inline | ⚠️ Berfungsi, tapi background `<body>` dikendalikan media query OS, bukan class (lihat §5.1) |
+
+---
+
+## 3. Persona Pengguna & Kebutuhan
+
+```mermaid
+graph TD
+    User([Pengunjung]) --> P1[Tech Recruiter — 30-60 detik]
+    User --> P2[Engineering Manager — 2-5 menit]
+    User --> P3[Klien Freelance — 1-3 menit]
+
+    P1 --> G1[Cek ketersediaan, unduh CV, baca domisili]
+    P2 --> G2[Inspeksi arsitektur, tech stack, repo publik]
+    P3 --> G3[Kontak cepat via WA/Email]
+```
+
+Tidak berubah dari v1.0.0. Yang berubah: **Tech recruiter tidak bisa menyelesaikan tugasnya** karena (a) `#footer` di navigasi tidak menunjuk ke elemen apa pun — footer sebenarnya ber-`id="contact"` — dan (b) halaman `/projects/portfolio` dan `/rahasia-admin/*` mengembalikan dokumen kosong, yaitu tautan mati yang langsung merusak kredibilitas begitu visitor mengetiknya.
+
+---
+
+## 4. Spesifikasi Fitur (As-Built)
+
+### 4.1 Halaman Beranda (`/`)
+
+| Komponen | File | Implementasi Terverifikasi |
+| :--- | :--- | :--- |
+| Navbar | `layout/Navbar.astro` | Sticky, `backdrop-blur-xl`, 7 item navigasi dari `navigation.ts`, animasi mobile via CSS `grid-template-rows: 0fr→1fr` tanpa JS berat |
+| Theme Toggle | `layout/ThemeToggle.astro` | Inline SVG matahari/bulan, persist ke `localStorage("theme")` |
+| Hero | `sections/Hero.astro` | Badge "Available for Work", H1 dari `profile.name.split(" - ")[0]`, 2 CTA (Contact→`/links`, Projects→`/projects`), foto profil via `astro:assets` `fetchpriority="high"` |
+| About | `sections/About.astro` | `id="about"`, Quick Facts `<dl>` (Location/Experience/Status), 2 metrik (years, projects), Core Stack dengan ikon |
+| Tech Stack | `sections/TechStack.astro` | `id="skills"`, 12 skill bar beranimasi via `IntersectionObserver` + `requestAnimationFrame` (eased cubic), 6 kategori tool |
+| Featured Project | `sections/FeaturedProject.astro` | `id="projects"`, **grid semua proyek** (bukan 1 unggulan seperti klaim v1.0.0) |
+| Experience | `sections/Experience.astro` | `id="work"`, linimasa vertikal 2 entri. ⚠️ Logika `hidden-exp` untuk `index >= 2` + tombol toggle **dikomentari** (lihat REMEDIATION B7) |
+| Certificates | `sections/Certificates.astro` | `id="certificates"`, 6 kartu, filter pill (All/Internship/Backend/Web/Frontend) client-side + empty state |
+| Footer | `layout/Footer.astro` | `id="contact"` (**bukan `footer"` — nav `#footer` rusak**), CTA card, tombol Email + CV ID + CV EN, 6 social pill, copyright dinamis |
+
+### 4.2 Arsip Proyek (`/projects`)
+
+| Fitur | Status |
+| :--- | :--- |
+| Layout alternating 12-kolom (gambar 7 / teks 5) | ✅ |
+| Filter dropdown Category + Role | ✅ nilai unik diekstrak otomatis dari data |
+| Auto-reorder kiri/kanan setelah filter | ✅ counter `visibleCount`, toggle `lg:order-first/last` |
+| Empty state | ✅ `#no-results-msg` |
+| Tombol Demo disabled bila `liveUrl` kosong | ✅ |
+| **Judul proyek** | ❌ Render `toLowerCase()` + `capitalize` → **"School Management System Api"** |
+
+### 4.3 Bio-Link Hub (`/links`)
+
+✅ Avatar, tombol Portfolio, unduh CV ID/EN, 6 social card, container `max-w-md`. ❌ H1 menampilkan `profile.name` lengkap termasuk tagline.
+
+### 4.4 404
+
+✅ Visual 404 + copy Bahasa Indonesia + tombol recovery. ❌ `href="/"` **tidak menghormati `base`** dan `href="javascript:history.back()"` adalah anti-pattern.
+
+### 4.5 Halaman Kosong (Harus Dihapus)
+
+| Rute | Sumber | Status Output |
+| :--- | :--- | :--- |
+| `/projects/portfolio` | `src/pages/projects/[slug].astro` | **0 byte HTML** |
+| `/rahasia-admin/` | `src/pages/rahasia-admin/index.astro` | **0 byte HTML** |
+| `/rahasia-admin/login/` | `src/pages/rahasia-admin/login.astro` | **0 byte HTML** |
+| `/rahasia-admin/dashboard/` | `src/pages/rahasia-admin/dashboard.astro` | **0 byte HTML** |
+
+File `src/pages/projects/index` (tanpa ekstensi) dan `src/utils/constants.ts` juga kosong.
+
+---
+
+## 5. Kebutuhan Non-Fungsional — Status vs Target
+
+### 5.1 Performa & Web Vitals
+
+| Metrik | Target | Status |
+| :--- | :--- | :--- |
+| FCP | < 0.8 dtk | ✅ Kemungkinan tercapai — tanpa framework runtime |
+| LCP | < 1.2 dtk | ⚠️ Risiko: `og:image.png` tidak ada; LCP hero = foto profil WebP ✅ |
+| **CLS** | **0.00** | ❌ **3 `<img>` tanpa `width`/`height`** → layout shift saat load |
+| INP | < 50 ms | ✅ ~1.100 baris JS inline total, tanpa framework |
+| **Background mengikuti tema** | Ya | ❌ **Bug cascade — lihat §5.4** |
+
+### 5.2 SEO & Open Graph — ❌ PRIORITAS TERTINGGI
+
+Ini masalah paling merusak secara bisnis: **setiap tautan yang dibagikan ke LinkedIn/WhatsApp/Telegram saat ini menampilkan metadata yang salah.**
+
+| Tag | Nilai Ter-build (terverifikasi di `dist/`) | Seharusnya |
+| :--- | :--- | :--- |
+| `og:url` | `https://github.com/Portofolio/` ❌ | `https://rizkymaulana-dev.github.io/Portofolio/` |
+| `twitter:url` | `https://github.com/Portofolio/` ❌ | idem |
+| `og:image` | `https://github.com/og-image.png` ❌ | `.../Portofolio/og-image.png` (file juga hilang) |
+| `twitter:image` | `https://github.com/og-image.png` ❌ | idem |
+| `rel=canonical` | `https://rizkymaulana-dev.github.io/Portofolio/` ⚠️ | hardcode di semua halaman — salah untuk `/projects`, `/links`, `/404` |
+| `apple-touch-icon` | `/apple-touch-icon.png` ❌ | `/Portofolio/apple-touch-icon.png` (tanpa prefix base) + file hilang |
+| `<html lang>` | `en` ⚠️ | `lang="id-ID"` sesuai `SITE.locale` |
+| JSON-LD | `ProfilePage` + `Person` ✅ | Handler GitHub tidak konsisten dengan `projects.ts` |
+| `robots.txt` | — | ❌ Tidak ada di `public/` |
+| `site.webmanifest` | `"name": "Portfolio Backend Developer"` ⚠️ | Sudah pivot ke Full Stack |
+
+### 5.3 Aksesibilitas
+
+| Item | Status |
+| :--- | :--- |
+| `prefers-reduced-motion` | ✅ Dihormati (`global.css:26-36`) + guard skill bar |
+| `aria-label` di tombol ikon | ✅ Navbar, ThemeToggle |
+| `aria-expanded` di hamburger | ✅ Di-toggle oleh JS |
+| Label `<select>` terhubung | ✅ `for="filter-category"` |
+| Kontras WCAG AA | ⚠️ Belum diukur otomatis |
+| **`aria-pressed` di filter sertifikat** | ❌ Tidak ada — screen reader tidak tahu kategori aktif |
+| Menu mobile tertutup setelah klik link | ❌ Tidak ada handler |
+
+### 5.4 Bug Theming Kritis (Verified)
+
+`src/styles/global.css:14-24` mendefinisikan background `<body>` **di luar `@layer`**:
+
+```css
+body { background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%); }
+@media (prefers-color-scheme: dark) {
+  body { background: linear-gradient(to bottom, #0f172a 0%, #1e293b 100%); }
+}
+```
+
+Utility Tailwind (`bg-white`, `dark:bg-neutral-950`) berada di `@layer utilities`. **Aturan unlayered selalu menang atas aturan berlayer** pada cascade CSS, apa pun spesifisitasnya. Terverifikasi di browser:
+
+| Skenario | `body` background | Teks heading | Hasil |
+| :--- | :--- | :--- | :--- |
+| OS terang, mode terang | gradien putih | gelap | ✅ |
+| OS gelap, mode gelap | gradien slate | putih | ✅ |
+| **OS gelap, user toggle ke TERANG** | **gradien slate** ❌ | gelap (`text-neutral-900`) | ❌ **Kontras hancur** |
+
+Konsekuensi tambahan: warna surface gelap adalah **slate `#0f172a`**, bukan token `neutral-950` `#0a0a0a` yang dideklarasikan DESIGN.md — sistem warna tidak konsisten dengan dokumennya sendiri.
+
+---
+
+## 6. Model Data
+
+### 6.1 SSOT yang Seharusnya (Target)
+
+```
+src/data/
+├── profile.ts       # identitas, bio, ketersediaan, metrik, core stack
+├── projects.ts      # CaseStudy[]: problem, solution, techStack, category, role, year, URL
+├── experience.ts    # Experience[]: role, company, period, achievements, techStack
+├── skills.ts        # Skill[] (level/icon/color) + TechCategory[] (taksonomi tool)
+├── certificates.ts  # Certificate[]: title, issuer, date, credentialId/Url, image, category
+├── navigation.ts    # NavigationItem[]: title, href
+└── socials.ts       # nama, url, icon
+```
+
+### 6.2 Deviasi dari Target
+
+| Deviasi | Lokasi | Dampak |
+| :--- | :--- | :--- |
+| `profile` diekspor dua kali dengan isi berbeda | `data/profile.ts` vs `data/portofolio.ts` | Dua sumber kebenaran yang saling bertentangan; `portofolio.ts` tidak diimpor mana pun → hapus |
+| `profile.name` berisi tagline | `profile.ts:2` | Memaksa `.split(" - ")[0]` di 2 tempat; bocor mentah di H1 `/links` dan copyright Footer |
+| `yearsExperience: 1` dengan komentar "Sesuaikan angka ini" | `profile.ts:14-15` | Angka hardcode yang harus diperbarui manual setiap tahun; sumber tunggal untuk metrik yang tampil di 3 tempat |
+| Username GitHub tidak konsisten | `socials.ts` & JSON-LD `RizkyMaulana310807` vs `projects.ts` `RizkyMaulana-Dev` | Satu dari keduanya salah |
+| Email Gmail placeholder | `socials.ts:4` `emailkamu@gmail.com` | Bertentangan dengan `profile.email` |
+| `credentialId` berisi `XXXX-XXXX` | `certificates.ts` (6×) | Kredensial palsu terlihat lebih buruk daripada tidak ditampilkan |
+| `image` menunjuk direktori kosong | `certificates.ts` (6×) | 6 request 404 per halaman beranda |
+
+---
+
+## 7. Backlog Prioritas
+
+### P0 — Kerugian reputasi aktif, perbaiki sebelum deploy berikutnya
+
+| # | Item |
+| :--- | :--- |
+| P0.1 | Hapus 4 halaman kosong + `AdminLayout.astro` + `projects/index` + `constants.ts` |
+| P0.2 | Perbaiki `site:` di `astro.config.mjs` → derivasi `og:url`/`twitter:url` benar |
+| P0.3 | Buat `public/og-image.png` (1200×630) + perbaiki path-nya |
+| P0.4 | Perbaiki bug cascade `body` background di `global.css` |
+| P0.5 | Perbaiki `href="/"` di 404 agar menghormati `BASE_URL`; ganti `javascript:history.back()` |
+| P0.6 | Ganti `emailkamu@gmail.com` dengan email asli |
+| P0.7 | Isi atau hapus `public/images/certificates/` |
+
+### P1 — Credibilitas & akurasi
+
+| # | Item |
+| :--- | :--- |
+| P1.1 | Hapus `XXXX-XXXX` dari credential ID, atau tampilkan ID hanya jika ada |
+| P1.2 | Pisahkan `name` dan `tagline` di `profile.ts`; hapus `.split(" - ")` di semua pemanggil |
+| P1.3 | Hapus `portofolio.ts`; tetapkan satu SSOT |
+| P1.4 | Seragamkan username GitHub di seluruh repo |
+| P1.5 | Tambahkan `width`/`height` ke 3 `<img>` untuk CLS 0.00 |
+| P1.6 | Perbaiki title proyek (`toLowerCase` + `capitalize` → capitalize correct) |
+| P1.7 | `#footer` → `#contact` di `navigation.ts` |
+| P1.8 | Tambah `astro check` ke CI; workflow hanya jalan di `main` tapi semua kerja ada di `agent` |
+
+### P2 — Peningkatan kualitas
+
+`aria-pressed` pada filter sertifikat · canonical per-rute · `lang="id-ID"` · `robots.txt` · `sitemap` · hapus CSS mati (`.text-blue-gradient`, `.fade-in-up`, `.stagger`, `.section`, `.card`) · hapus dependency mati (`zod`, `vite-tsconfig-paths`) · pasang `prettier-plugin-astro` + `prettier-plugin-tailwindcss` (ada di `.prettierrc` tapi tidak terinstal) · searahkan `tailwind.config.mjs` dengan Tailwind v4
+
+### P3 — Ekspansi (hanya setelah P0–P2 selesai)
+
+Studi kasus dinamis `/projects/[slug]` yang benar · halaman admin dengan proteksi auth · Lighthouse CI · view transitions
+
+---
+
+## 8. Roadmap
+
+| Fase | Status | Deliverable |
+| :--- | :--- | :--- |
+| **Fase 1** — Core Showcase | ✅ Selesai | Beranda, tema, filter proyek, linimasa, `/links` |
+| **Fase 2** — Documentation | ✅ Selesai | PRD + DESIGN + REMEDIATION |
+| **Fase 3** — Remediation | 🔴 **Aktif** | P0 + P1 (§7) |
+| **Fase 4** — Dynamic Case Study | ⏸ Tertunda | `[slug].astro` dengan content collection |
+| **Fase 5** — Admin & Analytics | ⏸ Tertunda | Hanya setelah auth nyata, bukan stub kosong |
+
+> **Aturan:** jangan mulai Fase 4/5 sebelum P0 selesai. Empat halaman kosong di produksi lebih buruk daripada tidak punya fitur tersebut sama sekali.

@@ -1,15 +1,19 @@
 ---
 import { navigation } from "../../data/navigation";
 import ThemeToggle from "./ThemeToggle.astro";
+import { Icon } from "astro-icon/components";
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-neutral-200 bg-white/80 backdrop-blur transition-colors duration-300 dark:border-neutral-800 dark:bg-neutral-950/80"
+    class="sticky top-0 z-50 border-b border-neutral-200 bg-white/70 backdrop-blur-xl transition-colors duration-300 dark:border-neutral-800 dark:bg-neutral-950/70"
 >
   <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
 
-    <a href={`${import.meta.env.BASE_URL}`} class="text-lg font-bold text-neutral-900 dark:text-white">
-      Rizky Maulana
+    <a href={`${import.meta.env.BASE_URL}`} class="group flex items-center gap-2 text-lg font-bold text-neutral-900 dark:text-white">
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+        <Icon name="mdi:code" class="h-5 w-5" />
+      </div>
+      <span>Rizky <span class="hidden sm:inline">Maulana</span></span>
     </a>
 
     <!-- Menu desktop -->
@@ -67,7 +71,6 @@ import ThemeToggle from "./ThemeToggle.astro";
   <!--
     Menu mobile (dropdown) — animasi pakai grid-template-rows trick:
     0fr -> 1fr untuk height, dibarengi fade opacity.
-    Ini cara paling mulus buat animasi height "auto" di CSS murni.
   -->
   <div
     id="mobile-menu"

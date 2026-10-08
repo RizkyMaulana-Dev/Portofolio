@@ -1,5 +1,13 @@
 # 🎨 System Architecture & Design Document (DESIGN.md)
 
+> ⚠️ **Dokumen ini ditulis untuk v1.0.0 dan sebagian sudah usang.** Angka versi dan beberapa klaim tidak lagi cocok dengan kode:
+> - Reality engine adalah **Astro 7.1.1** (bukan "Astro 5+"); Tailwind v4 dikonfigurasi lewat CSS, bukan lewat `tailwind.config.mjs`.
+> - `src/layouts/AdminLayout.astro`, `src/pages/rahasia-admin/*`, dan `src/pages/projects/[slug].astro` **adalah file kosong** yang menghasilkan HTML 0 byte — bukan fitur yang berfungsi. Lihat P0.1 di [REMEDIATION.md](REMEDIATION.md).
+> - §4.2 (expand/collapse timeline) menjelaskan tombol yang **dikomentari** di `Experience.astro`.
+> - Token warna dark-mode `#0a0a0a` di §2.1 **tidak terpakai** — `global.css` memasang gradient slate via `prefers-color-scheme`. Lihat P0.4.
+>
+> Dokumen otoritatif untuk kondisi terkini: **[PRD.md](PRD.md)** dan **[REMEDIATION.md](REMEDIATION.md)**.
+
 | Metadata | Keterangan |
 | :--- | :--- |
 | **Proyek** | Portfolio & Engineering Showcase - Rizky Maulana |

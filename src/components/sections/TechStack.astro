@@ -1,15 +1,14 @@
 ---
 import Container from "../ui/Container.astro";
 import Section from "../ui/Section.astro";
-import { techCategories } from "@/data/skills";
-// Kelompokkan sesuai kebutuhan kamu.
-// Silakan tambah/kurangi/pindah item antar kategori.
+import { Icon } from "astro-icon/components";
+import { techCategories, skills } from "@/data/skills";
 ---
 
 <Section
-  class="bg-white py-20 transition-colors duration-300 sm:py-28 dark:bg-neutral-950"
+  class="bg-neutral-50 py-20 transition-colors duration-300 sm:py-28 dark:bg-neutral-900/40"
 >
-  <Container>
+  <Container id="skills">
     <!-- Eyebrow + heading -->
     <div class="mx-auto max-w-2xl text-center">
       <p
@@ -23,35 +22,148 @@ import { techCategories } from "@/data/skills";
         Tools I Work With
       </h2>
       <p class="mt-4 text-base text-neutral-600 dark:text-neutral-400">
-        A mix of web technologies and game engines I use to build
-        reliable, interactive products.
+        Teknologi yang saya kuasai, diterapkan langsung pada proyek produksi 
+        untuk membangun aplikasi yang andal, scalable, dan modern.
       </p>
     </div>
 
-    <!-- Grid kategori -->
-    <div class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        techCategories.map((category) => (
-          <div
-            class="rounded-2xl border border-neutral-200 bg-neutral-50 p-6 transition-colors duration-300 dark:border-neutral-800 dark:bg-neutral-900"
-          >
-            <h3 class="text-sm font-semibold text-neutral-900 dark:text-white">
-              {category.label}
-            </h3>
-
-            <ul class="mt-4 flex flex-col gap-2">
-              {category.items.map((item) => (
-                <li
-                  class="flex items-center gap-2.5 text-sm text-neutral-600 dark:text-neutral-400"
-                >
-                  <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+    <!-- Skill Proficiency Bars -->
+    <div class="mt-14 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+      {skills.map((skill) => (
+        <div class="group" data-skill-level={skill.level}>
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 transition-transform duration-300 group-hover:scale-110 dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <Icon name={skill.icon} class="h-5 w-5" style={`color: ${skill.color}`} />
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-neutral-900 dark:text-white">
+                  {skill.name}
+                </p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                  {skill.description}
+                </p>
+              </div>
+            </div>
+            <span
+              class="text-sm font-bold tabular-nums text-neutral-900 dark:text-white skill-value"
+            >
+              0%
+            </span>
           </div>
-        ))
-      }
+
+          <div
+            class="mt-3 h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800"
+          >
+            <div
+              class="skill-bar h-full rounded-full transition-all duration-[1400ms] ease-out"
+              style={`background: linear-gradient(90deg, ${skill.color}cc, ${skill.color}); width: 0%`}
+              data-target={skill.level}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Kategori tools -->
+    <div class="mt-16">
+      <p class="text-center text-sm font-semibold text-neutral-900 dark:text-white">
+        Kemampuan & Alat Pendukung
+      </p>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {techCategories.map((category) => (
+          <div
+            class="group rounded-2xl border border-neutral-200 bg-white p-6 transition-all duration-300 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-blue-700"
+          >
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600/10 text-blue-600 transition-transform duration-300 group-hover:scale-110 dark:bg-blue-500/20 dark:text-blue-400"
+              >
+                <Icon name="mdi:code-tags" class="h-5 w-5" />
+              </span>
+              <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                {category.label}
+              </h3>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              {category.items.map((item) => {
+                const matchedSkill = skills.find(
+                  (s) => s.name.toLowerCase() === item.toLowerCase()
+                );
+                return (
+                  <span
+                    class="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-700 transition-all duration-300 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+                  >
+                    {matchedSkill && (
+                      <Icon name={matchedSkill.icon} class="h-3.5 w-3.5" style={`color: ${matchedSkill.color}`} />
+                    )}
+                    {item}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </Container>
 </Section>
+
+<style is:global>
+  @media (prefers-reduced-motion: reduce) {
+    .skill-bar, .skill-value {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const skills = document.querySelectorAll("[data-skill-level]");
+    
+    const animateSkill = (skillEl) => {
+      const target = Number(skillEl.getAttribute("data-skill-level"));
+      const bar = skillEl.querySelector(".skill-bar");
+      const valueEl = skillEl.querySelector(".skill-value");
+      
+      if (!bar || !valueEl) return;
+      
+      let current = 0;
+      const duration = 1400;
+      const start = performance.now();
+
+      const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        current = Math.round(target * eased);
+        valueEl.textContent = `${current}%`;
+        
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        }
+      };
+      
+      bar.style.width = `${target}%`;
+      requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateSkill(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    skills.forEach((skill) => observer.observe(skill));
+  })();
+</script>
