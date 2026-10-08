@@ -1,10 +1,254 @@
 ---
-export async function getStaticPaths() {
-  return [
+import MainLayout from "../../layouts/MainLayout.astro";
+import Container from "../../components/ui/Container.astro";
+import { Icon } from "astro-icon/components";
+import { Projects } from "@/data/projects";
+import { resolveProjectImages } from "@/utils/project-images";
 
-    {
-      params: { slug: "portfolio" },
-    },
-  ];
+export async function getStaticPaths() {
+  return Projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
 }
+
+const { project } = Astro.props;
+const images = resolveProjectImages(project);
 ---
+
+<MainLayout
+  title={`${project.title} | ${project.role}`}
+  description={project.description || project.solution}
+>
+  <div class="bg-white py-12 sm:py-20 transition-colors duration-300 dark:bg-neutral-950">
+    <Container>
+      <a
+        href={`${import.meta.env.BASE_URL}/projects`}
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 transition-colors hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400"
+      >
+        <Icon name="mdi:arrow-left" class="h-4 w-4" />
+        Semua Project
+      </a>
+
+      <!-- Header -->
+      <header class="mt-8">
+        <span class="text-xs font-mono uppercase tracking-wider text-neutral-400 dark:text-neutral-500">{project.category}</span>
+        <h1 class="mt-2 text-4xl font-black tracking-tight text-neutral-900 sm:text-5xl dark:text-white">{project.title}</h1>
+        <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+          <span class="inline-flex items-center gap-1.5"><Icon name="mdi:account-tie" class="h-3.5 w-3.5" />{project.role}</span>
+          <span class="inline-flex items-center gap-1.5"><Icon name="mdi:calendar" class="h-3.5 w-3.5" />{project.year}</span>
+          {project.status && (
+            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">{project.status}</span>
+          )}
+          {project.duration && (
+            <span class="inline-flex items-center gap-1.5"><Icon name="mdi:timer-outline" class="h-3.5 w-3.5" />{project.duration}</span>
+          )}
+        </div>
+      </header>
+
+      <!-- Gallery -->
+      <section class="mt-10" aria-label={`Gallery ${project.title}`}>
+        {images.length === 0 ? (
+          <div class="flex aspect-video w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-900">
+            <span class="text-4xl" aria-hidden="true">💻</span>
+          </div>
+        ) : images.length === 1 ? (
+          <div class="overflow-hidden rounded-2xl">
+            <img src={images[0]} alt={`${project.title} — gambar 1`} class="aspect-video w-full object-cover" />
+          </div>
+        ) : (
+          <div>
+            <div class="group relative overflow-hidden rounded-2xl">
+              <img id="gallery-main" src={images[0]} alt={`${project.title} — gambar 1`} class="aspect-video w-full object-cover" />
+              <button
+                id="gallery-open"
+                type="button"
+                aria-label="Perbesar gambar"
+                class="absolute bottom-3 right-3 rounded-full bg-black/60 p-2.5 text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+              >
+                <Icon name="mdi:fullscreen" class="h-4 w-4" />
+              </button>
+            </div>
+            <div class="mt-3 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Pilihan gambar">
+              {images.map((src, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  data-index={i}
+                  class="gallery-thumb shrink-0 overflow-hidden rounded-lg border-2 border-transparent"
+                  aria-label={`Lihat gambar ${i + 1} dari ${images.length}`}
+                >
+                  <img src={src} alt="" loading="lazy" class="h-14 w-20 object-cover sm:h-16 sm:w-24" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <!-- Detail sections -->
+      <section class="mt-10 max-w-4xl">
+        {project.description && <p class="text-lg leading-relaxed text-neutral-700 dark:text-neutral-300">{project.description}</p>}
+        <div class="mt-8 space-y-8">
+          {project.problem && (
+            <div>
+              <h2 class="mb-2 text-lg font-bold tracking-tight text-neutral-900 dark:text-white">Latar Belakang &amp; Masalah</h2>
+              <p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{project.problem}</p>
+            </div>
+          )}
+          {project.solution && (
+            <div>
+              <h2 class="mb-2 text-lg font-bold tracking-tight text-neutral-900 dark:text-white">Solusi &amp; Pendekatan</h2>
+              <p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{project.solution}</p>
+            </div>
+          )}
+          <div class="grid gap-8 sm:grid-cols-2">
+            {project.features && project.features.length > 0 && (
+              <div>
+                <h3 class="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Fitur Utama</h3>
+                <ul class="space-y-1.5">
+                  {project.features.map((item) => (
+                    <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" aria-hidden="true"></span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {project.challenges && project.challenges.length > 0 && (
+              <div>
+                <h3 class="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Tantangan</h3>
+                <ul class="space-y-1.5">
+                  {project.challenges.map((item) => (
+                    <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" aria-hidden="true"></span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          {project.results && project.results.length > 0 && (
+            <div>
+              <h3 class="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Hasil &amp; Manfaat</h3>
+              <ul class="space-y-1.5">
+                {project.results.map((item) => (
+                  <li class="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" aria-hidden="true"></span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <!-- Tech & links -->
+      <section class="mt-10 border-t border-neutral-200 pt-8 dark:border-neutral-800">
+        <h2 class="mb-3 text-xs font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Tech Stack</h2>
+        <div class="flex flex-wrap gap-1.5">
+          {project.techStack.map((tech) => (
+            <span class="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">{tech}</span>
+          ))}
+        </div>
+        {(project.liveUrl || project.githubUrl) && (
+          <div class="mt-6 flex flex-wrap gap-3">
+            {project.liveUrl && project.liveUrl !== "#" && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-4 py-2 text-xs font-semibold text-white transition-all duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+              >
+                Live <Icon name="mdi:arrow-top-right" class="h-3 w-3" />
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 px-4 py-2 text-xs font-semibold text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <Icon name="mdi:github" class="h-3 w-3" /> Code
+              </a>
+            )}
+          </div>
+        )}
+      </section>
+    </Container>
+  </div>
+
+  <!-- Lightbox -->
+  {images.length > 1 && (
+    <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4" role="dialog" aria-modal="true" aria-label={`Perbesar gambar ${project.title}`}>
+      <button id="lightbox-close" type="button" aria-label="Tutup"
+        class="absolute right-4 top-4 rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20">
+        <Icon name="mdi:close" class="h-5 w-5" />
+      </button>
+      <button id="lightbox-prev" type="button" aria-label="Gambar sebelumnya"
+        class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20">
+        <Icon name="mdi:chevron-left" class="h-5 w-5" />
+      </button>
+      <button id="lightbox-next" type="button" aria-label="Gambar berikutnya"
+        class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20">
+        <Icon name="mdi:chevron-right" class="h-5 w-5" />
+      </button>
+      <img id="lightbox-img" src={images[0]} alt={`${project.title} — perbesar`} class="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" />
+    </div>
+  )}
+
+  <script define:vars={{ images }}>
+    const state = { index: 0 };
+
+    const main = document.getElementById("gallery-main");
+    const thumbs = Array.from(document.querySelectorAll(".gallery-thumb"));
+    function syncThumbs() {
+      thumbs.forEach((t, i) => {
+        const active = i === state.index;
+        t.classList.toggle("border-blue-600", active);
+        t.classList.toggle("border-transparent", !active);
+        t.setAttribute("aria-selected", String(active));
+      });
+    }
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    let lightboxIndex = 0;
+
+    function showLightbox(index) {
+      lightboxIndex = (index + images.length) % images.length;
+      if (lightboxImg) lightboxImg.src = images[lightboxIndex];
+      lightbox?.classList.remove("hidden");
+      lightbox?.classList.add("flex");
+    }
+    function hideLightbox() {
+      lightbox?.classList.add("hidden");
+      lightbox?.classList.remove("flex");
+    }
+
+    document.getElementById("gallery-open")?.addEventListener("click", () => showLightbox(state.index));
+    document.getElementById("lightbox-close")?.addEventListener("click", hideLightbox);
+    document.getElementById("lightbox-prev")?.addEventListener("click", () => showLightbox(lightboxIndex - 1));
+    document.getElementById("lightbox-next")?.addEventListener("click", () => showLightbox(lightboxIndex + 1));
+    lightbox?.addEventListener("click", (e) => { if (e.target === lightbox) hideLightbox(); });
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox?.classList.contains("flex")) return;
+      if (e.key === "Escape") hideLightbox();
+      if (e.key === "ArrowLeft") showLightbox(lightboxIndex - 1);
+      if (e.key === "ArrowRight") showLightbox(lightboxIndex + 1);
+    });
+
+    thumbs.forEach((thumb) =>
+      thumb.addEventListener("click", () => {
+        state.index = Number(thumb.dataset.index);
+        if (main && images[state.index]) main.src = images[state.index];
+        syncThumbs();
+      })
+    );
+    if (main) syncThumbs();
+  </script>
+</MainLayout>

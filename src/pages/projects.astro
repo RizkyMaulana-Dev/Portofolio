@@ -3,11 +3,14 @@ import MainLayout from "../layouts/MainLayout.astro";
 import Container from "../components/ui/Container.astro";
 import Section from "../components/ui/Section.astro";
 import Button from "../components/ui/Button.astro";
+import { Icon } from "astro-icon/components";
 import { Projects } from "@/data/projects";
+import { resolveProjectImages } from "@/utils/project-images";
 
 // Mengekstrak daftar kategori dan role yang unik secara otomatis dari data
 const uniqueCategories = ["ALL", ...new Set(Projects.map(p => p.category))];
 const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
+const base = import.meta.env.BASE_URL;
 ---
 
 <MainLayout 
@@ -55,6 +58,8 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
       <div id="projects-container" class="flex flex-col gap-24 sm:gap-32">
         {
           Projects.map((project, index) => {
+            const images = resolveProjectImages(project);
+            const cover = images[0];
             const isEven = index % 2 === 0;
             const isLiveDisabled = !project.liveUrl || project.liveUrl === '#';
             return (
@@ -69,16 +74,23 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
                 <div class={`image-col lg:col-span-7 w-full ${isEven ? 'lg:order-first' : 'lg:order-last'}`}>
                   <div class="relative bg-neutral-900 dark:bg-neutral-950 rounded-2xl p-4 sm:p-6 shadow-xl border border-neutral-200/60 dark:border-neutral-800 group overflow-hidden">
                     <div class="aspect-video w-full rounded-lg overflow-hidden bg-neutral-800 flex items-center justify-center">
-                      {project.image ? (
+                      {cover ? (
                         <img 
-                          src={project.image} 
-                          alt={project.title} 
+                          src={cover} 
+                          alt={project.title}
                           class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
                         />
                       ) : (
                         <span class="text-neutral-500 text-sm font-mono">💻 Mockup_{project.title.replace(/\s+/g, '_')}.png</span>
                       )}
                     </div>
+                    {images.length > 1 && (
+                      <span class="absolute bottom-7 right-7 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-neutral-800 backdrop-blur-sm dark:bg-neutral-950/80 dark:text-neutral-200">
+                        <Icon name="mdi:image-multiple" class="h-3 w-3" />
+                        {images.length}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -93,7 +105,7 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
                   </h2>
                   
                   <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">
-                    {project.solution}
+                    {project.description || project.solution}
                   </p>
 
                   <div class="grid grid-cols-3 gap-4 py-5 border-t border-b border-neutral-200 dark:border-neutral-800 mb-8 text-sm">
@@ -111,7 +123,13 @@ const uniqueRoles = ["ALL", ...new Set(Projects.map(p => p.role))];
                     </div>
                   </div>
 
-                    <div class="flex gap-4">
+                    <div class="flex flex-wrap gap-4">
+                    <!-- TOMBOL DETAIL -->
+                    <a href={`${base}/projects/${project.slug}/`}>
+                      <Button class="rounded-full px-6 py-2">
+                        Detail
+                      </Button>
+                    </a>
                     <!-- TOMBOL Demo -->
                     {isLiveDisabled ? (
                         <button 
