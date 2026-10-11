@@ -23,16 +23,17 @@ export const Experiences: Experience[] = [
         techStack: ["Phaser.js", "JavaScript", "HTML"]
     },
     {
-        role: "Fullstack Web dan Mobile Developer",
-        company: "Freelance",
-        location: "Remote / 6 Month",
-        period: "Agustus 2024 - Januari 2025",
-        description: "Merancang dan mengembangkan berbagai aplikasi web dan mobile dengan fokus utama pada arsitektur backend, pembuatan API, dan penanganan logika bisnis yang kompleks.",
+        role: "Fullstack Web Developer",
+        company: "Freelance / Client Projects",
+        location: "Remote",
+        period: "Agustus 2024 - Januari 2026",
+        description: "Merancang dan mengembangkan berbagai aplikasi web dengan fokus pada arsitektur backend, perancangan skema database mandiri, pembuatan REST API, dan penanganan logika bisnis kompleks.",
         achievements: [
-            "Membangun dan menstrukturisasi database untuk berbagai sistem manajemen, termasuk aplikasi absensi, manajemen film, manajemen komik, rental barang, dan perpustakaan.",
-            "Merancang RESTful API mandiri (lokal) sebagai jembatan komunikasi data yang aman dan efisien antara server dan sisi klien (client-side).",
+            "Merancang skema database mandiri untuk berbagai sistem manajemen: absensi, rental barang (inventory), pre-order kuliner, dan manajemen catatan — termasuk relasi antar-tabel dan normalisasi.",
+            "Membangun dan menstrukturisasi RESTful API sebagai jembatan komunikasi data yang aman dan efisien antara server dan sisi klien.",
+            "Mengembangkan dashboard admin dengan panel pengelolaan real-time (monitoring pesanan, approval transaksi, tracking riwayat) untuk kebutuhan operasional klien.",
             "Memastikan fungsionalitas, optimasi performa, dan integritas data pada sisi backend dalam berbagai proyek dengan tenggat waktu yang ketat."
         ],
-        techStack: ["Laravel", "PHP", "RESTful API", "MySQL"]
+        techStack: ["Laravel", "PHP", "RESTful API", "MySQL", "Tailwind CSS"]
     },
 ];

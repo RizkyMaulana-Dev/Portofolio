@@ -1,14 +1,14 @@
 export const profile = {
-  name: "Rizky Maulana - Fullstack Developer from Indonesia",
-  role: "Full Stack Web Developer",
+  name: "Rizky Maulana - Junior Fullstack Developer",
+  role: "Junior Fullstack Developer",
   email: "maulana.rizky.connect@gmail.com",
-  location: "Indonesia",
+  location: "Bandung, Jawa Barat (WFO) / Remote",
 
-  bio: "Full Stack Developer specializing in React, TypeScript, Laravel, Node.js, and REST API development.",
+  bio: "Junior Fullstack Developer dengan pengalaman membangun dashboard admin, sistem inventory, dan REST API — kuat di desain skema database mandiri, Laravel, dan TypeScript.",
 
   builds: ["School management system", "Book API"],
-  
-  availability: "Open to Work",
+
+  availability: "Open to Work — WFO Bandung / Remote",
 
   // Sesuaikan angka ini dengan pengalaman aktualmu
   yearsExperience: 1,
