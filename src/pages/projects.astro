@@ -36,7 +36,7 @@ const base = import.meta.env.BASE_URL;
         <div class="flex flex-col sm:flex-row gap-4 items-center bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800">
           <div class="w-full sm:w-auto flex items-center gap-3">
             <label for="filter-category" class="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Category:</label>
-            <select id="filter-category" class="bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-48 p-2.5 outline-none transition-colors cursor-pointer">
+            <select id="filter-category" class="bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 block w-full sm:w-48 p-2.5 outline-none transition-colors cursor-pointer">
               {uniqueCategories.map(cat => (
                 <option value={cat}>{cat}</option>
               ))}
@@ -44,7 +44,7 @@ const base = import.meta.env.BASE_URL;
           </div>
           <div class="w-full sm:w-auto flex items-center gap-3">
             <label for="filter-role" class="text-sm font-semibold text-neutral-500 dark:text-neutral-400">Role:</label>
-            <select id="filter-role" class="bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-48 p-2.5 outline-none transition-colors cursor-pointer">
+            <select id="filter-role" class="bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 dark:focus:ring-blue-400 dark:focus:border-blue-400 block w-full sm:w-48 p-2.5 outline-none transition-colors cursor-pointer">
               {uniqueRoles.map(role => (
                 <option value={role}>{role}</option>
               ))}

@@ -52,7 +52,7 @@ const stack: string[] = profile.stack ?? [
           </div>
 
           <!-- Decorative pulsing dot -->
-          <div class="absolute -bottom-4 -right-4 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/20 text-blue-600 animate-pulse dark:bg-blue-500/30">
+          <div class="absolute -bottom-4 -right-4 flex h-8 w-8 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 animate-pulse dark:bg-neutral-800 dark:text-neutral-400">
             <Icon name="mdi:server" class="h-4 w-4" />
           </div>
         </div>
@@ -137,7 +137,7 @@ const stack: string[] = profile.stack ?? [
                   class="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-sm font-medium text-neutral-700 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-800"
                 >
                   {matchedSkill && (
-                    <Icon name={matchedSkill.icon} class="h-4 w-4" style={`color: ${matchedSkill.color}`} />
+                    <Icon name={matchedSkill.icon} class="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
                   )}
                   {tech}
                 </span>

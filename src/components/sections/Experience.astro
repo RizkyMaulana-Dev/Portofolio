@@ -38,10 +38,10 @@ import { Experiences } from "@/data/experience";
           Geser untuk melihat pengalaman lainnya
         </p>
         <div class="flex items-center gap-2">
-          <button type="button" data-exp-prev aria-label="Pengalaman sebelumnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
+          <button type="button" data-exp-prev aria-label="Pengalaman sebelumnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
             <Icon name="mdi:chevron-left" class="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
           </button>
-          <button type="button" data-exp-next aria-label="Pengalaman berikutnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
+          <button type="button" data-exp-next aria-label="Pengalaman berikutnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
             <Icon name="mdi:chevron-right" class="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -54,11 +54,11 @@ import { Experiences } from "@/data/experience";
             <article class="exp-item group relative flex-shrink-0 w-[80vw] sm:w-[22rem] snap-start" style={`--d:${i * 90}ms`}>
               <!-- Segmen garis timeline -->
               <div class="absolute top-[7px] inset-x-0 h-0.5 bg-neutral-200 dark:bg-neutral-800 overflow-hidden" aria-hidden="true">
-                <span class="exp-line-fill block h-full w-full origin-left scale-x-0 bg-blue-500/60 dark:bg-blue-400/60 transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]" />
+                <span class="exp-line-fill block h-full w-full origin-left scale-x-0 bg-blue-600/50 dark:bg-blue-400/50 transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]" />
               </div>
               <!-- Titik timeline -->
               <div class="absolute top-1.5 left-1 w-3 h-3 rounded-full bg-white dark:bg-neutral-950 border-[2.5px] border-blue-600 dark:border-blue-400 z-10 exp-dot" aria-hidden="true">
-                <span class="exp-dot-pulse absolute inset-0 rounded-full border-2 border-blue-500/60" />
+                <span class="exp-dot-pulse absolute inset-0 rounded-full border-2 border-blue-600/60 dark:border-blue-400/60" />
               </div>
 
               <!-- Kartu pengalaman -->
@@ -87,7 +87,7 @@ import { Experiences } from "@/data/experience";
                   <ul class="space-y-2 mb-4 text-[12px] text-neutral-700 dark:text-neutral-300">
                     {exp.achievements.map((ach, j) => (
                       <li class="flex items-start gap-1.5">
-                        <span class="text-blue-500 dark:text-blue-400 mt-0.5 select-none exp-bullet" style={`--d:${600 + j * 110}ms`}>•</span>
+                        <span class="text-blue-600 dark:text-blue-400 mt-0.5 select-none exp-bullet" style={`--d:${600 + j * 110}ms`}>•</span>
                         <span class="leading-snug">{ach}</span>
                       </li>
                     ))}
