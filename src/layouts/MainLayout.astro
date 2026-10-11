@@ -83,6 +83,7 @@ const {
         const isDark = stored ? stored === "dark" : prefersDark;
 
         document.documentElement.classList.toggle("dark", isDark);
+        document.documentElement.classList.add("has-anim");
       })();
     </script>
   </head>
@@ -96,5 +97,121 @@ const {
     </main>
 
     <Footer />
+
+    <!-- Global Motion Animations -->
+    <script type="module">
+      import { inView, animate } from "motion";
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (!reduced) {
+        // 1. Universal fade + slide for [data-anim]
+        const animateEl = (el: HTMLElement) => {
+          const type = el.dataset.anim || "up";
+          const delay = Number(el.dataset.animDelay || 0);
+          const duration = 0.6;
+          const ease = [0.16, 1, 0.3, 1] as const;
+
+          const keyframes: Record<string, Record<string, [string, string]>> = {
+            fade: { opacity: ["0", "1"] },
+            up: { opacity: ["0", "1"], transform: ["translateY(24px)", "translateY(0)"] },
+            down: { opacity: ["0", "1"], transform: ["translateY(-24px)", "translateY(0)"] },
+            left: { opacity: ["0", "1"], transform: ["translateX(-24px)", "translateX(0)"] },
+            right: { opacity: ["0", "1"], transform: ["translateX(24px)", "translateX(0)"] },
+            zoom: { opacity: ["0", "1"], scale: ["0.92", "1"] },
+          };
+
+          animate(el, keyframes[type] || keyframes.up, { delay, duration, ease });
+        };
+
+        const inStagger = (el: Element) =>
+          el.closest("[data-anim-stagger], [data-anim-child]") !== null;
+
+        // Standalone [data-anim] elements (own inView + own delay)
+        document
+          .querySelectorAll("[data-anim]")
+          .forEach((el) => {
+            if (inStagger(el)) return;
+            inView(
+              el,
+              () => animateEl(el as HTMLElement),
+              { amount: 0.15, once: true }
+            );
+          });
+
+        // [data-anim-stagger] parents: auto-stagger their [data-anim] children
+        document.querySelectorAll("[data-anim-stagger]").forEach((parent) => {
+          const kids = [...parent.querySelectorAll("[data-anim]")] as HTMLElement[];
+          const items: HTMLElement[] = parent.hasAttribute("data-anim")
+            ? [parent as HTMLElement, ...kids]
+            : kids;
+          if (!items.length) return;
+          const amount = Number(parent.dataset.animStagger || 0.08);
+          inView(
+            parent,
+            () => {
+              items.forEach((child, i) => {
+                child.dataset.animDelay = String(amount * i);
+                animateEl(child);
+              });
+            },
+            { amount: 0.15, once: true }
+          );
+        });
+
+        // [data-anim-child] parents: auto-stagger all direct children
+        document.querySelectorAll("[data-anim-child]").forEach((parent) => {
+          const children = [...parent.children] as HTMLElement[];
+          if (!children.length) return;
+          const amount = 0.09;
+          inView(
+            parent,
+            () => {
+              children.forEach((child, i) => {
+                if (!child.dataset.anim) child.dataset.anim = "up";
+                child.dataset.animDelay = String(amount * i);
+                animateEl(child);
+              });
+            },
+            { amount: 0.15, once: true }
+          );
+        });
+
+        // 2. Stat count-up
+        document.querySelectorAll("[data-stat]").forEach((el) => {
+          const target = Number(el.dataset.stat);
+          inView(
+            el,
+            () => {
+              let raf = 0;
+              const start = performance.now();
+              const dur = 1200;
+              const tick = (now: number) => {
+                const p = Math.min((now - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = `${Math.round(target * eased)}+`;
+                if (p < 1) raf = requestAnimationFrame(tick);
+              };
+              raf = requestAnimationFrame(tick);
+            },
+            { amount: 0.2, once: true }
+          );
+        });
+
+        // 3. Magnetic hover on interactive elements (opt-in)
+        document.querySelectorAll("[data-magnetic]").forEach((el) => {
+          const strength = Number(el.dataset.magnetic || 0.2);
+          const onMove = (e: MouseEvent) => {
+            const r = el.getBoundingClientRect();
+            const x = (e.clientX - r.left - r.width / 2) * strength;
+            const y = (e.clientY - r.top - r.height / 2) * strength;
+            animate(el, { x, y }, { type: "spring", stiffness: 200, damping: 15 });
+          };
+          const onLeave = () => animate(el, { x: 0, y: 0 }, { type: "spring", stiffness: 200, damping: 15 });
+          el.addEventListener("mousemove", onMove);
+          el.addEventListener("mouseleave", onLeave);
+        });
+      }
+    </script>
   </body>
 </html>

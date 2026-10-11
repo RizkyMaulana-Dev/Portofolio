@@ -16,9 +16,23 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+/* Initial state for animated elements — hidden until JS animates them in */
+.has-anim [data-anim],
+.has-anim [data-anim-child] > * {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* Keep everything visible & static */
+  .has-anim [data-anim],
+  .has-anim [data-anim-child] > * {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   *, *::before, *::after {

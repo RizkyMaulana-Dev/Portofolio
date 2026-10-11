@@ -5,7 +5,8 @@ interface Props {
   class?: string;
   target?: string;
   rel?: string;
-  download?: boolean | string; // 1. Tambahkan ini
+  download?: boolean | string;
+  [key: `data-${string}`]: any;
 }
 
 const {
@@ -14,7 +15,8 @@ const {
   class: className = "",
   target,
   rel,
-  download, // 2. Tangkap propertinya di sini
+  download,
+  ...rest
 } = Astro.props;
 
 const variants = {
@@ -33,12 +35,14 @@ const variants = {
       rel={rel}
       download={download}
       class={`inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium transition-all duration-200 ${variants[variant]} ${className}`}
+      {...rest}
     >
       <slot />
     </a>
   ) : (
     <button
       class={`inline-flex items-center justify-center rounded-xl px-5 py-3 font-medium transition-all duration-200 ${variants[variant]} ${className}`}
+      {...rest}
     >
       <slot />
     </button>

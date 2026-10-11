@@ -12,24 +12,31 @@ import { resolveProjectImages } from "@/utils/project-images";
 >
   <Container id="projects">
     <!-- Header -->
-    <div class="mx-auto max-w-2xl text-center">
+    <div class="mx-auto max-w-2xl text-center" data-anim="up" data-anim-stagger>
       <p
         class="text-sm font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400"
+        data-anim="fade"
       >
         Featured Work
       </p>
       <h2
         class="mt-3 text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl dark:text-white"
+        data-anim="fade"
+        data-anim-delay="80"
       >
         Projects I've <span class="text-blue-600 dark:text-blue-400">Built</span>
       </h2>
-      <p class="mt-4 text-base text-neutral-600 dark:text-neutral-400">
+      <p
+        class="mt-4 text-base text-neutral-600 dark:text-neutral-400"
+        data-anim="fade"
+        data-anim-delay="160"
+      >
         Full-stack applications showcasing backend architecture, API design, and modern UI implementation.
       </p>
     </div>
 
     <!-- Project Grid -->
-    <div class="mt-14 grid gap-8">
+    <div class="mt-14 grid gap-8" data-anim-child="up">
       {Projects.map((project) => {
         const images = resolveProjectImages(project);
         const cover = images[0];
@@ -162,11 +169,12 @@ import { resolveProjectImages } from "@/utils/project-images";
     </div>
 
     <!-- CTA -->
-    <div class="mt-14 flex justify-center">
+    <div class="mt-14 flex justify-center" data-anim="up">
       <Button
         href={`${import.meta.env.BASE_URL}/projects`}
         variant="secondary"
         class="rounded-full px-8 py-3 text-sm"
+        data-magnetic="0.15"
       >
         View All Projects
         <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
