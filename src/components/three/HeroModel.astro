@@ -1,0 +1,192 @@
+---
+/**
+ * HeroModel — WebGL GLB background untuk Hero section.
+ * - Model "agak jauh" (kamera mundur, object di_scale kecil, offset kiri)
+ * - Fade + naik ke atas seiring scroll (scroll-linked, bukan scroll listener)
+ * - Lazy: canvas + three dimuat setelah first paint (requestIdleCallback)
+ * - Reduced motion: render 1 frame statis, tanpa loop / scroll effect
+ */
+interface Props {
+  src: string;
+  class?: string;
+}
+const { src, class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={["hero-model pointer-events-none absolute inset-0 z-0 overflow-hidden", className]}
+  aria-hidden="true"
+  data-src={src}
+>
+  <canvas class="block h-full w-full opacity-0 transition-opacity duration-1000" data-canvas></canvas>
+</div>
+
+<script>
+  import * as THREE from "three";
+  import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+  import { scroll as motionScroll } from "motion";
+
+  const root = document.querySelector<HTMLElement>(".hero-model");
+  const canvas = root?.querySelector<HTMLCanvasElement>("[data-canvas]");
+
+  if (root && canvas) {
+    const src = root.dataset.src!;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* Renderer */
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: "low-power",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    /* "Agak jauh": kamera jauh, target di origin, object di-frame kecil */
+    camera.position.set(0, 0, 9);
+
+    /* Lighting — soft, netral (mengikuti palette: putih + biru halus) */
+    scene.add(new THREE.AmbientLight(0xffffff, 1.6));
+    const key = new THREE.DirectionalLight(0xffffff, 2.2);
+    key.position.set(4, 6, 8);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x93c5fd, 1.4);
+    rim.position.set(-6, -2, -4);
+    scene.add(rim);
+
+    /* Holder supaya model bisa diposisikan terpisah dari scene root */
+    const holder = new THREE.Group();
+    scene.add(holder);
+
+    /* ---------- Resize ---------- */
+    const resize = () => {
+      const w = root.clientWidth;
+      const h = root.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    /* ---------- Load GLB ---------- */
+    let model: THREE.Object3D | null = null;
+    const baseScale = new THREE.Vector3(1, 1, 1);
+    /* Posisi: geser ke kiri supaya konten kanan tetap lega */
+    const basePos = new THREE.Vector3(-1.9, 0, 0);
+
+    new GLTFLoader().load(
+      src,
+      (gltf) => {
+        model = gltf.scene;
+        holder.add(model);
+
+        /* Normalize scale: bounding sphere -> radius ~1 */
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        model.position.sub(center);
+        baseScale.setScalar(1.15 / maxDim); // kecil = "agak jauh"
+        model.scale.copy(baseScale);
+        model.position.copy(basePos);
+
+        renderer.render(scene, camera);
+        canvas.classList.remove("opacity-0");
+
+        if (!reduced) start();
+      },
+      undefined,
+      (err) => {
+        console.warn("[hero-model] gagal memuat GLB:", err);
+      }
+    );
+
+    /* ---------- Scroll: fade + naik ke atas ---------- */
+    let scrollY = 0;
+    let raf = 0;
+
+    if (!reduced) {
+      motionScroll((info: { y: { current: number } }) => {
+        scrollY = info.y.current;
+        if (!raf) raf = requestAnimationFrame(applyScroll);
+      });
+    }
+
+    const applyScroll = () => {
+      raf = 0;
+      if (!model) return;
+      const HERO_H = root.parentElement?.offsetHeight ?? window.innerHeight;
+      const p = Math.min(scrollY / HERO_H, 1);
+
+      /* Fade out 0 -> 0.35, naik ke atas 0 -> 2.6 unit */
+      holder.position.y = p * 2.6;
+      renderer.domElement.style.opacity = String(Math.max(0, 1 - p / 0.35));
+
+      /* Rotation loop baca scrollY yang ter-cache (no re-render per frame penuh) */
+      holder.rotation.y = p * 0.7;
+      renderer.render(scene, camera);
+    };
+
+    /* ---------- Idle rotation + pointer parallax ---------- */
+    let mx = 0;
+    let my = 0;
+    if (!reduced) {
+      window.addEventListener(
+        "pointermove",
+        (e) => {
+          mx = (e.clientX / window.innerWidth - 0.5) * 0.32;
+          my = (e.clientY / window.innerHeight - 0.5) * 0.22;
+        },
+        { passive: true }
+      );
+    }
+
+    let visible = true;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible && !reduced) start();
+      },
+      { threshold: 0 }
+    );
+    io.observe(root);
+
+    /* ---------- Render loop (hanya saat terlihat & tidak reduced) ---------- */
+    let t = 0;
+    let last = 0;
+    const tick = (now: number) => {
+      if (!visible) return;
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      t += dt;
+
+      if (model) {
+        /* Rotasi pelan + parallax pointer */
+        holder.rotation.y += dt * 0.18 + mx * 0.01;
+        holder.rotation.x += (my * 0.06 - holder.rotation.x) * 0.05;
+        holder.rotation.z = Math.sin(t * 0.4) * 0.03;
+
+        /* Float halus */
+        model.position.y = basePos.y + Math.sin(t * 0.8) * 0.14;
+        model.position.x = basePos.x + Math.cos(t * 0.5) * 0.1;
+
+        /* Terapkan offset scroll */
+        holder.position.y = scrollY > 0 ? holder.position.y : 0;
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (raf) cancelAnimationFrame(raf);
+      last = performance.now();
+      requestAnimationFrame(tick);
+    };
+  }
+</script>
