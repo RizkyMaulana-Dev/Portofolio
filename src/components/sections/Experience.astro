@@ -1,16 +1,17 @@
 ---
+import { Icon } from "astro-icon/components";
 import Container from "../ui/Container.astro";
 import Section from "../ui/Section.astro";
 import Badge from "../ui/Badge.astro";
 import { Experiences } from "@/data/experience";
 ---
 
-<Section class="bg-white transition-colors duration-300 dark:bg-neutral-950 py-20 sm:py-28 border-t border-neutral-100 dark:border-neutral-800/50">
+<Section class="bg-white transition-colors duration-300 dark:bg-neutral-950 py-12 sm:py-16 border-t border-neutral-100 dark:border-neutral-800/50">
   <Container id="work">
     
     <!-- Section Header -->
-    <div class="max-w-3xl mx-auto text-center mb-16 sm:mb-24">
-      <Badge class="mb-4 sm:mb-5">
+    <div class="max-w-2xl mx-auto text-center mb-10 sm:mb-14">
+      <Badge class="mb-3">
         💼 Journey & Background
       </Badge>
       <h2 class="text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-white">
@@ -21,101 +22,323 @@ import { Experiences } from "@/data/experience";
       </p>
     </div>
 
-    <!-- Timeline Container -->
-    <div class="max-w-4xl mx-auto relative before:absolute before:top-0 before:bottom-0 before:left-4 sm:before:left-1/2 before:w-0.5 before:bg-neutral-200 before:dark:bg-neutral-800">
-      
-      {
-        Experiences.map((exp, index) => {
-          const isEven = index % 2 === 0;
-          const isHiddenByDefault = index >= 2;          
+    <div class="relative">
+      <!-- Nav Arrows -->
+      <div class="hidden sm:flex items-center justify-between mb-4 select-none">
+        <p class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-600 exp-hint">
+          <Icon name="mdi:gesture-swipe-horizontal" class="h-4 w-4" />
+          Geser untuk melihat pengalaman lainnya
+        </p>
+        <div class="flex items-center gap-2">
+          <button type="button" data-exp-prev aria-label="Pengalaman sebelumnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
+            <Icon name="mdi:chevron-left" class="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
+          </button>
+          <button type="button" data-exp-next aria-label="Pengalaman berikutnya" class="exp-nav group inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400 transition-all duration-200 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 active:scale-95 disabled:opacity-30 disabled:pointer-events-none">
+            <Icon name="mdi:chevron-right" class="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </button>
+        </div>
+      </div>
 
-          return (
-            /* FIX: Menyisipkan class dinamis hidden-exp di bawah ini agar data lama tersembunyi */
-            <div class={`relative mb-16 sm:mb-24 last:mb-0 group ${isHiddenByDefault ? 'hidden-exp hidden' : ''}`}>
-              
-              <!-- Timeline Dot (Titik Tengah) -->
-              <div class="absolute top-1.5 left-4 sm:left-1/2 w-4 h-4 rounded-full bg-white dark:bg-neutral-950 border-4 border-blue-600 dark:border-blue-400 -translate-x-1/2 z-10 transition-transform duration-300 group-hover:scale-125" />
+      <!-- Horizontal Timeline: row yang dapat digeser, pengalaman terbaru selalu di depan -->
+      <div class="exp-scroll relative flex overflow-x-auto snap-x snap-mandatory [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)]">
+        {
+          Experiences.map((exp, i) => (
+            <article class="exp-item group relative flex-shrink-0 w-[80vw] sm:w-[22rem] snap-start" style={`--d:${i * 90}ms`}>
+              <!-- Segmen garis timeline -->
+              <div class="absolute top-[7px] inset-x-0 h-0.5 bg-neutral-200 dark:bg-neutral-800 overflow-hidden" aria-hidden="true">
+                <span class="exp-line-fill block h-full w-full origin-left scale-x-0 bg-blue-500/60 dark:bg-blue-400/60 transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]" />
+              </div>
+              <!-- Titik timeline -->
+              <div class="absolute top-1.5 left-1 w-3 h-3 rounded-full bg-white dark:bg-neutral-950 border-[2.5px] border-blue-600 dark:border-blue-400 z-10 exp-dot" aria-hidden="true">
+                <span class="exp-dot-pulse absolute inset-0 rounded-full border-2 border-blue-500/60" />
+              </div>
 
-              <!-- Content Card Container -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full pl-12 sm:pl-0">
-                
-                <!-- Kolom Kiri: Info Waktu -->
-                <div class={`flex flex-col ${isEven ? 'sm:text-right sm:items-end' : 'sm:order-last sm:text-left sm:items-start'} justify-start pt-0.5`}>
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 mb-2">
-                    {exp.period}
-                  </span>
-                  <span class="text-sm font-medium text-neutral-400 dark:text-neutral-500">
-                    {exp.location}
-                  </span>
-                </div>
-
-                <!-- Kolom Kanan/Kiri: Detail Pekerjaan -->
-                <div class={`bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-800/60 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:shadow-md hover:border-neutral-300 dark:hover:border-neutral-700 ${isEven ? '' : 'sm:text-left'}`}>
-                  <h3 class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              <!-- Kartu pengalaman -->
+              <div class="mt-6 pr-4 sm:pr-6">
+                <div class="h-full bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-800/60 rounded-xl p-4 sm:p-5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-neutral-300 dark:hover:border-neutral-700 exp-card">
+                  <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2.5">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                      {exp.period}
+                    </span>
+                    <span class="text-[12px] font-medium text-neutral-400 dark:text-neutral-500">
+                      {exp.location}
+                    </span>
+                  </div>
+                  <h3 class="text-lg font-bold tracking-tight text-neutral-900 dark:text-white mb-1">
                     {exp.role}
                   </h3>
-                  <h4 class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1 mb-4">
+                  <h4 class="text-[12px] font-semibold text-blue-600 dark:text-blue-400 mb-3">
                     {exp.company}
                   </h4>
                   
-                  <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-5">
+                  <p class="text-[12px] text-neutral-600 dark:text-neutral-400 leading-snug mb-4">
                     {exp.description}
                   </p>
 
                   <!-- List Kontribusi/Pencapaian -->
-                  <ul class="space-y-2.5 mb-6 text-sm text-neutral-700 dark:text-neutral-300">
-                    {exp.achievements.map((ach) => (
-                      <li class="flex items-start gap-2">
-                        <span class="text-blue-500 dark:text-blue-400 mt-1 select-none">•</span>
-                        <span class="leading-relaxed">{ach}</span>
+                  <ul class="space-y-2 mb-4 text-[12px] text-neutral-700 dark:text-neutral-300">
+                    {exp.achievements.map((ach, j) => (
+                      <li class="flex items-start gap-1.5">
+                        <span class="text-blue-500 dark:text-blue-400 mt-0.5 select-none exp-bullet" style={`--d:${600 + j * 110}ms`}>•</span>
+                        <span class="leading-snug">{ach}</span>
                       </li>
                     ))}
                   </ul>
 
                   <!-- Tech Stack Mini Footer -->
-                  <div class="flex flex-wrap gap-1.5 pt-4 border-t border-neutral-200/60 dark:border-neutral-800/60">
+                  <div class="flex flex-wrap gap-1 pt-2.5 border-t border-neutral-200/60 dark:border-neutral-800/60">
                     {exp.techStack.map((tech) => (
-                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-white text-neutral-600 border border-neutral-200 dark:bg-neutral-950 dark:text-neutral-400 dark:border-neutral-800">
+                      <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-white text-neutral-600 border border-neutral-200 dark:bg-neutral-950 dark:text-neutral-400 dark:border-neutral-800">
                         {tech}
                       </span>
                     ))}
                   </div>
                 </div>
-
               </div>
-            </div>
-          );
-        })
-      }
+            </article>
+          ))
+        }
+      </div>
 
+      <!-- Progress Bar -->
+      <div class="mt-4 h-0.5 w-full bg-neutral-100 dark:bg-neutral-800/50 rounded-full overflow-hidden" aria-hidden="true">
+        <div class="exp-progress h-full w-full origin-left scale-x-0 rounded-full bg-blue-600 dark:bg-blue-400 transition-transform duration-150 ease-out" />
+      </div>
+
+      <p class="sm:hidden mt-3 flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-600 exp-hint">
+        <Icon name="mdi:gesture-swipe-horizontal" class="h-4 w-4" />
+        Geser untuk melihat lainnya
+      </p>
     </div>
-
-    <!-- <div class="text-center mt-12"> -->
-      <!-- <button id="toggle-exp-btn" class="px-6 py-2.5 text-sm font-semibold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all cursor-pointer inline-flex items-center gap-2"> -->
-        <!-- Tampilkan Semua Pengalaman v -->
-      <!-- </button> -->
-    <!-- </div> -->
-
   </Container>
 </Section>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggleBtn = document.getElementById("toggle-exp-btn");
-    const hiddenRows = document.querySelectorAll(".hidden-exp");
-    let isOpen = false;
+<style>
+  /* Scrollbar */
+  .exp-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(161 161 170 / 0.35) transparent;
+  }
+  .exp-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  .exp-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .exp-scroll::-webkit-scrollbar-thumb {
+    background: rgb(161 161 170 / 0.35);
+    border-radius: 9999px;
+  }
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => {
-        isOpen = !isOpen;
-        hiddenRows.forEach(row => {
-          row.classList.toggle("hidden");
-        });
-        
-        toggleBtn.textContent = isOpen 
-          ? "Sembunyikan Pengalaman ^" 
-          : "Tampilkan Semua Pengalaman v";
-      });
+  /* Scroll reveal */
+  .exp-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms);
+  }
+  .exp-item.is-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .exp-line-fill {
+    transform: scaleX(0);
+  }
+  .exp-item.is-in .exp-line-fill {
+    transform: scaleX(1);
+  }
+
+  /* Dot pulse hanya saat masuk viewport */
+  .exp-dot-pulse {
+    opacity: 0;
+  }
+  .exp-item.is-in .exp-dot-pulse {
+    animation: exp-pulse 2.4s ease-out 0.9s 2;
+  }
+
+  /* Bullet stagger */
+  .exp-bullet {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  .exp-item.is-in .exp-bullet {
+    animation: exp-bullet-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--d) forwards;
+  }
+
+  /* Hover lift + shadow */
+  .exp-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Drag state */
+  .exp-scroll.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  @keyframes exp-pulse {
+    0% {
+      opacity: 0.7;
+      transform: scale(1);
     }
-  });
+    100% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
+  @keyframes exp-bullet-in {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Reduced motion: everything static & instantly visible */
+  @media (prefers-reduced-motion: reduce) {
+    .exp-item {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .exp-line-fill {
+      transform: scaleX(1);
+      transition: none;
+    }
+    .exp-dot-pulse,
+    .exp-bullet {
+      animation: none !important;
+      opacity: 0;
+      transform: none;
+    }
+    .exp-card {
+      transition: none;
+    }
+    .exp-card:hover {
+      transform: none;
+    }
+    .exp-progress {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const track = document.querySelector<HTMLElement>(".exp-scroll");
+  const progress = document.querySelector<HTMLElement>(".exp-progress");
+  const prevBtn = document.querySelector<HTMLButtonElement>("[data-exp-prev]");
+  const nextBtn = document.querySelector<HTMLButtonElement>("[data-exp-next]");
+  const hints = document.querySelectorAll<HTMLElement>(".exp-hint");
+  const items = document.querySelectorAll<HTMLElement>(".exp-item");
+
+  if (track && items.length) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = reduce ? "auto" : "smooth";
+
+    /* 1. Reveal saat masuk viewport */
+    if (reduce) {
+      items.forEach((el) => el.classList.add("is-in"));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+      items.forEach((el) => io.observe(el));
+    }
+
+    /* 2. Progress bar + tombol nav */
+    const step = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const ratio = max > 0 ? track.scrollLeft / max : 0;
+      if (progress) progress.style.transform = `scaleX(${ratio})`;
+      if (prevBtn) prevBtn.disabled = track.scrollLeft < 4;
+      if (nextBtn) nextBtn.disabled = track.scrollLeft > max - 4;
+    };
+
+    let ticking = false;
+    track.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          step();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", step, { passive: true });
+    step();
+
+    /* 3. Nav arrows */
+    const cardStep = () => {
+      const card = items[0] as HTMLElement;
+      return card.getBoundingClientRect().width + 16;
+    };
+    prevBtn?.addEventListener("click", () => track.scrollBy({ left: -cardStep(), behavior }));
+    nextBtn?.addEventListener("click", () => track.scrollBy({ left: cardStep(), behavior }));
+
+    /* 4. Drag to scroll */
+    let isDown = false;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") return;
+      isDown = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+    });
+
+    const onMove = (e: PointerEvent) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 3) {
+        moved = true;
+        track.classList.add("is-dragging");
+      }
+      track.scrollLeft = startLeft - dx;
+    };
+
+    const onUp = () => {
+      if (!isDown) return;
+      isDown = false;
+      track.classList.remove("is-dragging");
+      /* snap balik ke kartu terdekat */
+      if (moved) {
+        const card = items[0] as HTMLElement;
+        const w = card.getBoundingClientRect().width;
+        const target = Math.round(track.scrollLeft / w) * w;
+        track.scrollTo({ left: target, behavior });
+      }
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+
+    /* 5. Hilangkan hint setelah interaksi pertama */
+    const dismiss = () => {
+      hints.forEach((h) => {
+        h.style.transition = "opacity 400ms ease, transform 400ms ease";
+        h.style.opacity = "0";
+        h.style.transform = "translateY(-4px)";
+      });
+    };
+    track.addEventListener("scroll", dismiss, { once: true, passive: true });
+    prevBtn?.addEventListener("click", dismiss);
+    nextBtn?.addEventListener("click", dismiss);
+  }
 </script>
