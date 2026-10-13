@@ -2,6 +2,7 @@
 import Container from "../ui/Container.astro";
 import Section from "../ui/Section.astro";
 import Button from "../ui/Button.astro";
+import ImageCarousel from "../ui/ImageCarousel.astro";
 import { Icon } from "astro-icon/components";
 import { Projects } from "@/data/projects";
 import { resolveProjectImages } from "@/utils/project-images";
@@ -47,11 +48,10 @@ import { resolveProjectImages } from "@/utils/project-images";
           <!-- Image -->
           <div class="relative aspect-video w-full overflow-hidden bg-neutral-100 sm:col-span-5 sm:aspect-[4/3] dark:bg-neutral-800">
             {cover ? (
-              <img
-                src={cover}
+              <ImageCarousel
+                images={images}
                 alt={project.title}
-                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
+                imgClass="transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div class="flex h-full w-full items-center justify-center">

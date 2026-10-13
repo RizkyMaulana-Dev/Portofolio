@@ -1,6 +1,7 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import Container from "../../components/ui/Container.astro";
+import ImageCarousel from "../../components/ui/ImageCarousel.astro";
 import { Icon } from "astro-icon/components";
 import { Projects } from "@/data/projects";
 import { resolveProjectImages } from "@/utils/project-images";
@@ -47,7 +48,7 @@ const images = resolveProjectImages(project);
       </header>
 
       <!-- Gallery -->
-      <section class="mt-10" aria-label={`Gallery ${project.title}`}>
+      <section class="mt-10" id="gallery" aria-label={`Gallery ${project.title}`}>
         {images.length === 0 ? (
           <div class="flex aspect-video w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-900">
             <span class="text-4xl" aria-hidden="true">💻</span>
@@ -58,8 +59,13 @@ const images = resolveProjectImages(project);
           </div>
         ) : (
           <div>
-            <div class="group relative overflow-hidden rounded-2xl">
-              <img id="gallery-main" src={images[0]} alt={`${project.title} — gambar 1`} class="aspect-video w-full object-cover" />
+            <div class="group relative aspect-video overflow-hidden rounded-2xl">
+              <ImageCarousel
+                class="gallery-main"
+                images={images}
+                alt={project.title}
+                firstLoading="eager"
+              />
               <button
                 id="gallery-open"
                 type="button"
@@ -204,7 +210,7 @@ const images = resolveProjectImages(project);
   <script define:vars={{ images }}>
     const state = { index: 0 };
 
-    const main = document.getElementById("gallery-main");
+    const carousel = document.querySelector<HTMLElement>("#gallery .gallery-main");
     const thumbs = Array.from(document.querySelectorAll(".gallery-thumb"));
     function syncThumbs() {
       thumbs.forEach((t, i) => {
@@ -215,6 +221,12 @@ const images = resolveProjectImages(project);
       });
     }
 
+    document.addEventListener("carousel:index", (event) => {
+      const detail = (event as CustomEvent<{ index: number }>).detail;
+      state.index = detail.index;
+      syncThumbs();
+    });
+
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
     let lightboxIndex = 0;
@@ -222,12 +234,14 @@ const images = resolveProjectImages(project);
     function showLightbox(index) {
       lightboxIndex = (index + images.length) % images.length;
       if (lightboxImg) lightboxImg.src = images[lightboxIndex];
+      carousel?.dispatchEvent(new CustomEvent("carousel:pause"));
       lightbox?.classList.remove("hidden");
       lightbox?.classList.add("flex");
     }
     function hideLightbox() {
       lightbox?.classList.add("hidden");
       lightbox?.classList.remove("flex");
+      carousel?.dispatchEvent(new CustomEvent("carousel:resume"));
     }
 
     document.getElementById("gallery-open")?.addEventListener("click", () => showLightbox(state.index));
@@ -245,10 +259,12 @@ const images = resolveProjectImages(project);
     thumbs.forEach((thumb) =>
       thumb.addEventListener("click", () => {
         state.index = Number(thumb.dataset.index);
-        if (main && images[state.index]) main.src = images[state.index];
         syncThumbs();
+        carousel?.dispatchEvent(
+          new CustomEvent("carousel:jump", { detail: { index: state.index } })
+        );
       })
     );
-    if (main) syncThumbs();
+    syncThumbs();
   </script>
 </MainLayout>
