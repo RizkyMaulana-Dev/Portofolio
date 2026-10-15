@@ -12,6 +12,7 @@ export interface CaseStudy {
     image?: string; // Legacy: single image for backward compatibility
     liveUrl?: string;
     githubUrl?: string;
+    video?: string; // optional preview video URL (e.g. /videos/xxx.mp4)
     status?: "completed" | "in-progress" | "planned";
     duration?: string;
     features?: string[];
@@ -137,6 +138,7 @@ export const Projects: CaseStudy[] = [
         image: `${base}/images/projects/nitro-station.png`,
         liveUrl: "https://nitro-station-self.vercel.app",
         githubUrl: "",
+        video: `${base}/videos/nitro-station-preview.mp4`,
         status: "completed",
         features: [
             "Landing page lengkap: hero, partner logos, features, pricing, testimoni, footer",
