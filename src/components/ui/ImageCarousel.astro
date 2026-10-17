@@ -6,6 +6,10 @@ interface Props {
   class?: string;
   imgClass?: string;
   firstLoading?: "eager" | "lazy";
+  /** Preview videos rendered as slides ahead of the images. */
+  videos?: string[];
+  /** How long a video slide stays before auto-advancing (capped, never stalls). */
+  videoDwellMs?: number;
 }
 
 const {
@@ -15,38 +19,59 @@ const {
   class: className = "",
   imgClass = "",
   firstLoading = "lazy",
+  videos = [],
+  videoDwellMs = 12000,
 } = Astro.props;
 
-const hasMultiple = images.length > 1;
+const videoSlides = videos.filter((src) => src && src.trim() !== "");
+const slides = [
+  ...videoSlides.map((src) => ({ src, kind: "video" as const })),
+  ...images.map((src) => ({ src, kind: "image" as const })),
+];
+
+const hasMultiple = slides.length > 1;
 ---
 
 {
-  images.length === 0 ? (
+  slides.length === 0 ? (
     <div class:list={["image-carousel", className]} aria-hidden="true" />
   ) : hasMultiple ? (
     <div
       class:list={["image-carousel", className]}
       data-carousel
-      data-count={images.length}
+      data-count={slides.length}
       data-interval={intervalMs}
+      data-video-dwell={videoDwellMs}
       data-index="0"
       role="group"
-      aria-label={`${alt} — ${images.length} gambar`}
+      aria-label={`${alt} — ${slides.length} media`}
     >
       <div class="ic-track">
-        {
-          images.map((src, i) => (
+        {slides.map((slide, i) =>
+          slide.kind === "video" ? (
+            <div class="ic-slide">
+              <video
+                class="ic-video"
+                src={slide.src}
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label={`${alt} — video ${i + 1}`}
+              />
+            </div>
+          ) : (
             <div class="ic-slide">
               <img
-                src={src}
-                alt={`${alt} — gambar ${i + 1}`}
+                src={slide.src}
+                alt={`${alt} — gambar ${videoSlides.length + i}`}
                 class:list={["ic-img", imgClass]}
-                loading={i === 0 ? firstLoading : "lazy"}
+                loading={i === videoSlides.length ? firstLoading : "lazy"}
                 draggable="false"
               />
             </div>
-          ))
-        }
+          )
+        )}
       </div>
     </div>
   ) : (
@@ -55,7 +80,11 @@ const hasMultiple = images.length > 1;
       role="group"
       aria-label={alt}
     >
-      <img src={images[0]} alt={alt} class:list={["ic-img", imgClass]} loading={firstLoading} />
+      {slides[0].kind === "video" ? (
+        <video class="ic-video" src={slides[0].src} muted loop autoplay playsinline preload="metadata" aria-label={alt} />
+      ) : (
+        <img src={slides[0].src} alt={alt} class:list={["ic-img", imgClass]} loading={firstLoading} />
+      )}
     </div>
   )
 }
@@ -78,14 +107,27 @@ const hasMultiple = images.length > 1;
   }
 
   .ic-slide {
+    position: relative;
     flex: 0 0 100%;
     height: 100%;
   }
 
-  .ic-img {
+  .ic-img,
+  .ic-video {
     height: 100%;
     width: 100%;
     object-fit: cover;
+    display: block;
+  }
+
+  /* Tall captures: let the natural height through so init-carousel.ts can pan them. */
+  .ic-slide.is-pan .ic-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: auto;
+    max-width: none;
+    will-change: transform;
   }
 </style>
 

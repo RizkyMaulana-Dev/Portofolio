@@ -10,6 +10,7 @@ export interface CaseStudy {
     year: string;
     images?: string[];
     image?: string; // Legacy: single image for backward compatibility
+    videos?: string[]; // Preview videos (mp4/webm), rendered as gallery slides + card hover
     liveUrl?: string;
     githubUrl?: string;
     status?: "completed" | "in-progress" | "planned";
@@ -31,7 +32,6 @@ export const Projects: CaseStudy[] = [
         category: "Web",
         role: "Fullstack Developer",
         year: "2026",
-        image: `${base}/images/projects/School-Management.svg`,
         images: [
             `${base}/images/project/school-management-system/01-admin-manajemen-buku.png`,
             `${base}/images/project/school-management-system/02-presensi-siswa.png`,
@@ -68,7 +68,6 @@ export const Projects: CaseStudy[] = [
         category: "Web",
         role: "Fullstack Developer",
         year: "2025",
-        image: `${base}/images/projects/Main-Page-Web-Pemesanan.svg`,
         images: [
             `${base}/images/project/web-preorder-system/01-admin-orders.png`,
             `${base}/images/project/web-preorder-system/02-admin-dashboard.png`,
@@ -107,7 +106,6 @@ export const Projects: CaseStudy[] = [
         category: "Web",
         role: "Fullstack Developer",
         year: "2025",
-        image: `${base}/images/projects/Rental-Barang.svg`,
         images: [
             `${base}/images/project/equipment-rental-system/01-main-user.png`,
             `${base}/images/project/equipment-rental-system/02-dashboard-item.png`,
@@ -145,7 +143,6 @@ export const Projects: CaseStudy[] = [
         category: "Web",
         role: "Backend Developer & System Analyst",
         year: "2024",
-        image: `${base}/images/projects/Scribble-Notes.svg`,
         images: [
             `${base}/images/project/note-management-app/01-main.png`,
             `${base}/images/project/note-management-app/02-note-detail.png`,
@@ -178,7 +175,6 @@ export const Projects: CaseStudy[] = [
         category: "Web",
         role: "Fullstack Developer",
         year: "2025",
-        image: `${base}/images/projects/Landing-Page-Dimsum.svg`,
         images: [
             `${base}/images/project/authentic-dimsum/01-hero.png`,
             `${base}/images/project/authentic-dimsum/02-why-choose.png`,
@@ -194,6 +190,89 @@ export const Projects: CaseStudy[] = [
             "Manajemen menu interaktif: rating, stok, counter pesanan",
             "Keranjang belanja dinamis dengan selective checkout",
             "UI/UX bersih & responsif berbasis Tailwind",
+        ],
+    },
+    {
+        title: "OpenProgress — Transparent Project Tracking untuk Freelancer",
+        slug: "openprogress",
+        description: "Freelancer project-tracking platform with public status lookup, service price list, and a booking calendar, backed by an admin panel for projects, pricing, and testimonial moderation.",
+        problem: "Freelancer sering kewalahan answering clients yang menanyakan \"proyeknya sampai mana?\", sehingga harus melaporkan progress secara manual melalui chat. Klien tidak memiliki satu tempat yang transparan untuk melihat status, harga layanan, dan jadwal ketersediaan, sementara sisi freelancer tidak punya alat terpusat untuk mengelola proyek, paket harga, dan testimoni.",
+        solution: "Membangun platform Next.js dengan dua sisi: halaman publik yang menampilkan daftar layanan beserta rentang harga, kalender ketersediaan slot yang memvalidasi bentrok tanggal, serta fitur Cek Status Project berdasarkan kode proyek (PRJ-YYYY-XXXX). Sisi admin memakai Supabase dengan Row Level Security dan peran admin/super_admin untuk mengelola proyek, tugas, paket harga, serta moderasi testimoni. Status deployment disinkronkan otomatis dari GitHub lewat Octokit.",
+        techStack: [
+            "Next.js 16",
+            "React 19",
+            "TypeScript",
+            "Supabase",
+            "Tailwind CSS 4",
+            "Base UI",
+            "React Hook Form",
+            "Zod",
+        ],
+        category: "Web",
+        role: "Fullstack Developer",
+        year: "2026",
+        videos: [
+            `${base}/images/project/openprogress/preview-landing.mp4`,
+            `${base}/images/project/openprogress/preview-full.mp4`,
+        ],
+        liveUrl: "https://openprogress.vercel.app",
+        githubUrl: "https://github.com/RizkyMaulana-Dev/OpenProgress",
+        status: "in-progress",
+        features: [
+            "Cek Status Project berdasarkan kode unik (PRJ-YYYY-XXXX)",
+            "Sinkronisasi status deployment otomatis dari GitHub via Octokit",
+            "Kalender ketersediaan slot dengan validasi rentang tanggal yang sudah diblokir",
+            "Manajemen paket harga (rentang harga, durasi, kategori, fitur)",
+            "Antrean moderasi testimoni dengan aksi sembunyikan per item",
+            "Otorisasi berbasis peran admin & super_admin melalui Row Level Security",
+        ],
+        challenges: [
+            "Memastikan tidak ada bentrok jadwal saat klien memilih slot booking",
+            "Menjaga sinkronisasi GitHub tetap ringan tanpa membebani rate limit API",
+        ],
+        approach: [
+            "Pemisahan tegas antara halaman publik dan dashboard admin",
+            "Validasi bentrok tanggal di sisi server, bukan hanya di antarmuka",
+            "RLS Supabase sebagai lapisan otorisasi kedua di samping pemeriksaan peran",
+        ],
+    },
+    {
+        title: "Peyysupply — Streetwear & Thrift Store",
+        slug: "peyysupply",
+        description: "Full-stack streetwear and thrift storefront with multi-facet catalog filtering, a New Drop showcase, and a product-management admin panel.",
+        problem: "Penjual streetwear dan thrift lokal umumnya mengandalkan Instagram dan WhatsApp untuk berjualan, sehingga pembeli tidak punya cara terstruktur untuk menelusuri barang berdasarkan brand, kategori, atau ukuran. Stok, varian, dan harga pun ikut dikelola manual sehingga rawan tidak sinkron dengan produk yang sudah terjual.",
+        solution: "Membangun storefront Next.js dengan katalog yang mendukung filter multi-facet (brand, kategori, ukuran), section New Drop, serta carousel testimoni. Data produk, kategori, dan pengguna disimpan lewat Prisma ORM dengan autentikasi JWT dan refresh token. Panel admin terpisah mengelola siklus hidup produk, sementara Zustand menangani state katalog dan sesi di sisi klien.",
+        techStack: [
+            "Next.js 16",
+            "React 19",
+            "TypeScript",
+            "Prisma ORM",
+            "MariaDB",
+            "Tailwind CSS 4",
+            "Zustand",
+            "Zod",
+        ],
+        category: "Web",
+        role: "Fullstack Developer",
+        year: "2026",
+        videos: [
+            `${base}/images/project/peyysupply/preview.mp4`,
+        ],
+        liveUrl: "https://peyysupply.vercel.app",
+        githubUrl: "https://github.com/RizkyMaulana-Dev/peyysupply",
+        status: "completed",
+        features: [
+            "Filter katalog multi-facet: brand, kategori, dan ukuran",
+            "Section New Drop untuk showcase produk terbaru",
+            "Carousel testimoni pelanggan",
+            "Panel admin untuk mengelola produk",
+            "Autentikasi JWT dengan refresh token",
+            "Optimasi media gambar melalui ImageKit",
+        ],
+        approach: [
+            "Struktur berbasis fitur (features/product) agar state katalog terpisah dari auth",
+            "Pemisahan route admin dari storefront publik",
+            "Validasi input konsisten melalui Zod di sisi server",
         ],
     }
 ];

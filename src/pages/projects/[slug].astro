@@ -4,7 +4,7 @@ import Container from "../../components/ui/Container.astro";
 import ImageCarousel from "../../components/ui/ImageCarousel.astro";
 import { Icon } from "astro-icon/components";
 import { Projects } from "@/data/projects";
-import { resolveProjectImages } from "@/utils/project-images";
+import { resolveProjectImages, resolveProjectVideos } from "@/utils/project-images";
 
 export async function getStaticPaths() {
   return Projects.map((project) => ({
@@ -15,6 +15,9 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const images = resolveProjectImages(project);
+const videos = resolveProjectVideos(project);
+// Carousel slides are videos first, then images — keep thumbs in the same order.
+const media = [...videos, ...images];
 ---
 
 <MainLayout
@@ -48,14 +51,34 @@ const images = resolveProjectImages(project);
       </header>
 
       <!-- Gallery -->
-      <section class="mt-10" id="gallery" aria-label={`Gallery ${project.title}`}>
-        {images.length === 0 ? (
+      <section
+        class="mt-10"
+        id="gallery"
+        aria-label={`Gallery ${project.title}`}
+        data-gallery
+        data-gallery-images={JSON.stringify(images)}
+        data-gallery-video-count={videos.length}
+      >
+        {media.length === 0 ? (
           <div class="flex aspect-video w-full items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-900">
             <span class="text-4xl" aria-hidden="true">💻</span>
           </div>
-        ) : images.length === 1 ? (
+        ) : media.length === 1 ? (
           <div class="overflow-hidden rounded-2xl">
-            <img src={images[0]} alt={`${project.title} — gambar 1`} class="aspect-video w-full object-cover" />
+            {videos.length === 1 ? (
+              <video
+                src={videos[0]}
+                class="aspect-video w-full rounded-2xl object-cover"
+                muted
+                loop
+                autoplay
+                playsinline
+                preload="metadata"
+                aria-label={`${project.title} — video preview`}
+              />
+            ) : (
+              <img src={images[0]} alt={`${project.title} — gambar 1`} class="aspect-video w-full object-cover" />
+            )}
           </div>
         ) : (
           <div>
@@ -63,6 +86,7 @@ const images = resolveProjectImages(project);
               <ImageCarousel
                 class="gallery-main"
                 images={images}
+                videos={videos}
                 alt={project.title}
                 firstLoading="eager"
               />
@@ -75,16 +99,25 @@ const images = resolveProjectImages(project);
                 <Icon name="mdi:fullscreen" class="h-4 w-4" />
               </button>
             </div>
-            <div class="mt-3 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Pilihan gambar">
-              {images.map((src, i) => (
+            <div class="mt-3 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Pilihan media">
+              {media.map((src, i) => (
                 <button
                   type="button"
                   role="tab"
                   data-index={i}
-                  class="gallery-thumb shrink-0 overflow-hidden rounded-lg border-2 border-transparent"
-                  aria-label={`Lihat gambar ${i + 1} dari ${images.length}`}
+                  class="gallery-thumb relative shrink-0 overflow-hidden rounded-lg border-2 border-transparent"
+                  aria-label={i < videos.length ? `Putar video ${i + 1} dari ${media.length}` : `Lihat gambar ${i + 1} dari ${media.length}`}
                 >
-                  <img src={src} alt="" loading="lazy" class="h-14 w-20 object-cover sm:h-16 sm:w-24" />
+                  {i < videos.length ? (
+                    <>
+                      <video src={src} class="h-14 w-20 object-cover sm:h-16 sm:w-24" muted playsinline preload="metadata"></video>
+                      <span class="absolute inset-0 flex items-center justify-center bg-black/40" aria-hidden="true">
+                        <Icon name="mdi:play" class="h-4 w-4 text-white" />
+                      </span>
+                    </>
+                  ) : (
+                    <img src={src} alt="" loading="lazy" class="h-14 w-20 object-cover sm:h-16 sm:w-24" />
+                  )}
                 </button>
               ))}
             </div>
@@ -207,64 +240,7 @@ const images = resolveProjectImages(project);
     </div>
   )}
 
-  <script define:vars={{ images }}>
-    const state = { index: 0 };
-
-    const carousel = document.querySelector<HTMLElement>("#gallery .gallery-main");
-    const thumbs = Array.from(document.querySelectorAll(".gallery-thumb"));
-    function syncThumbs() {
-      thumbs.forEach((t, i) => {
-        const active = i === state.index;
-        t.classList.toggle("border-blue-600", active);
-        t.classList.toggle("border-transparent", !active);
-        t.setAttribute("aria-selected", String(active));
-      });
-    }
-
-    document.addEventListener("carousel:index", (event) => {
-      const detail = (event as CustomEvent<{ index: number }>).detail;
-      state.index = detail.index;
-      syncThumbs();
-    });
-
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    let lightboxIndex = 0;
-
-    function showLightbox(index) {
-      lightboxIndex = (index + images.length) % images.length;
-      if (lightboxImg) lightboxImg.src = images[lightboxIndex];
-      carousel?.dispatchEvent(new CustomEvent("carousel:pause"));
-      lightbox?.classList.remove("hidden");
-      lightbox?.classList.add("flex");
-    }
-    function hideLightbox() {
-      lightbox?.classList.add("hidden");
-      lightbox?.classList.remove("flex");
-      carousel?.dispatchEvent(new CustomEvent("carousel:resume"));
-    }
-
-    document.getElementById("gallery-open")?.addEventListener("click", () => showLightbox(state.index));
-    document.getElementById("lightbox-close")?.addEventListener("click", hideLightbox);
-    document.getElementById("lightbox-prev")?.addEventListener("click", () => showLightbox(lightboxIndex - 1));
-    document.getElementById("lightbox-next")?.addEventListener("click", () => showLightbox(lightboxIndex + 1));
-    lightbox?.addEventListener("click", (e) => { if (e.target === lightbox) hideLightbox(); });
-    document.addEventListener("keydown", (e) => {
-      if (!lightbox?.classList.contains("flex")) return;
-      if (e.key === "Escape") hideLightbox();
-      if (e.key === "ArrowLeft") showLightbox(lightboxIndex - 1);
-      if (e.key === "ArrowRight") showLightbox(lightboxIndex + 1);
-    });
-
-    thumbs.forEach((thumb) =>
-      thumb.addEventListener("click", () => {
-        state.index = Number(thumb.dataset.index);
-        syncThumbs();
-        carousel?.dispatchEvent(
-          new CustomEvent("carousel:jump", { detail: { index: state.index } })
-        );
-      })
-    );
-    syncThumbs();
+  <script>
+    import "@/scripts/project-gallery";
   </script>
 </MainLayout>

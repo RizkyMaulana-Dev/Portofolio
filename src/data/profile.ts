@@ -1,3 +1,5 @@
+import { Projects } from "./projects";
+
 export const profile = {
   name: "Rizky Maulana - Junior Fullstack Developer",
   role: "Junior Fullstack Developer",
@@ -12,7 +14,8 @@ export const profile = {
 
   // Sesuaikan angka ini dengan pengalaman aktualmu
   yearsExperience: 1,
-  projectsCount: 10,
+  // Derived so it can never drift from the entries in projects.ts
+  projectsCount: Projects.length,
 
   stack: [
   "TypeScript",

@@ -5,7 +5,7 @@ import Button from "../ui/Button.astro";
 import ImageCarousel from "../ui/ImageCarousel.astro";
 import { Icon } from "astro-icon/components";
 import { Projects } from "@/data/projects";
-import { resolveProjectImages } from "@/utils/project-images";
+import { resolveProjectImages, resolveProjectVideos } from "@/utils/project-images";
 ---
 
 <Section
@@ -41,8 +41,10 @@ import { resolveProjectImages } from "@/utils/project-images";
       {Projects.map((project) => {
         const images = resolveProjectImages(project);
         const cover = images[0];
+        const preview = resolveProjectVideos(project)[0];
         return (
         <article
+          data-card
           class="group relative flex flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-500 hover:shadow-xl hover:shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-blue-400 sm:grid sm:grid-cols-12 sm:gap-6"
         >
           <!-- Image -->
@@ -57,6 +59,21 @@ import { resolveProjectImages } from "@/utils/project-images";
               <div class="flex h-full w-full items-center justify-center">
                 <span class="text-4xl">💻</span>
               </div>
+            )}
+
+            {/* Hover preview: fades in over the still carousel, which is already paused on hover. */}
+            {preview && (
+              <video
+                class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500"
+                data-card-preview
+                src={preview}
+                muted
+                loop
+                playsinline
+                preload="none"
+                tabindex="-1"
+                aria-hidden="true"
+              />
             )}
 
             <!-- Badges -->
@@ -182,3 +199,7 @@ import { resolveProjectImages } from "@/utils/project-images";
     </div>
   </Container>
 </Section>
+
+<script>
+  import "@/scripts/card-preview";
+</script>

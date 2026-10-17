@@ -58,6 +58,16 @@ export function resolveProjectImages(project: Pick<CaseStudy, 'slug' | 'images' 
 }
 
 /**
+ * Resolve the preview videos for a project.
+ * Videos are declared explicitly on the entry rather than globbed: only some
+ * projects have them, and the order is intentional (first entry is the hover
+ * preview on the card, then extra gallery clips).
+ */
+export function resolveProjectVideos(project: Pick<CaseStudy, 'slug' | 'videos'>): string[] {
+  return (project.videos ?? []).filter((src) => src && src.trim() !== '');
+}
+
+/**
  * Build the URL of an image in a project's static folder by name.
  * /public/images/project/<slug>/<name> — static asset, works after build.
  */
