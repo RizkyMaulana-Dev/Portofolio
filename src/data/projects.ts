@@ -13,6 +13,7 @@ export interface CaseStudy {
     videos?: string[]; // Preview videos (mp4/webm), rendered as gallery slides + card hover
     liveUrl?: string;
     githubUrl?: string;
+    video?: string; // optional preview video URL (e.g. /videos/xxx.mp4)
     status?: "completed" | "in-progress" | "planned";
     duration?: string;
     features?: string[];
@@ -158,6 +159,34 @@ export const Projects: CaseStudy[] = [
             "Alur sistem dirancang dari flowchart",
             "Antarmuka responsif berbasis Tailwind",
             "Persistensi data via PHP Native + MySQL",
+        ],
+    },
+    {
+        title: "NITRO STATION — Gaming Station Booking Website",
+        slug: "nitro-station",
+        description: "Multi-page landing + booking site for a premium gaming-station brand, built pixel-faithful from Figma designs with a fully responsive layout and interactive booking flow.",
+        problem: "Brand gaming station premium membutuhkan website yang mampu menampilkan paket gaming (Core Squad, Nitro Elite, Family Plan), memfasilitasi registrasi member, dan proses reservasi unit secara online — dengan tampilan yang konsisten mengikuti desain Figma di semua ukuran layar, termasuk mobile.",
+        solution: "Membangun website statis multi-halaman (landing, register/login, unit reservation) yang mereplikasi desain Figma secara akurat: hero dengan ilustrasi isometric gaming setup, pricing tier dengan highlight Nitro Elite, testimoni, serta form reservasi interaktif dengan pemilihan paket, slider durasi, dan kuitansi akses yang menghitung total secara real-time. Seluruhnya responsif dari 320px hingga desktop tanpa horizontal scroll.",
+        techStack: ["HTML5", "CSS3", "JavaScript", "Responsive Design", "Vercel"],
+        category: "Web",
+        role: "Frontend Developer",
+        year: "2026",
+        image: `${base}/images/projects/nitro-station.png`,
+        liveUrl: "https://nitro-station-self.vercel.app",
+        githubUrl: "",
+        video: `${base}/videos/nitro-station-preview.mp4`,
+        status: "completed",
+        features: [
+            "Landing page lengkap: hero, partner logos, features, pricing, testimoni, footer",
+            "Halaman register/login split-screen dengan hexagon branding",
+            "Halaman unit reservation dengan form, pemilihan paket, dan slider durasi",
+            "Kuitansi akses real-time: total & jam main dihitung ulang saat paket/slider berubah",
+            "Responsif 320px–2560px, hamburger menu di mobile",
+        ],
+        approach: [
+            "Rekreasi pixel-accurate dari desain Figma",
+            "Mobile-first CSS dengan breakpoint 480/768/1024/1280",
+            "Zero dependency, static site, deploy langsung ke Vercel",
         ],
     },
     {
